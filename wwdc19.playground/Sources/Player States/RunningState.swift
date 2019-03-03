@@ -3,37 +3,39 @@ import SpriteKit
 
 class RunningState: GKState {
     
-    var player: PlayerNode
+    var animationKey: String = "runningAnimation"
     
-    var spritePointingDirection = "right"
+    var player: PlayerNode
     
     var runningTextures: [SKTexture] = [SKTexture(imageNamed: "Idle-1"), SKTexture(imageNamed: "Groep 2"), SKTexture(imageNamed: "Walk-2"), SKTexture(imageNamed: "Groep 1")]
     
-    init(with node: PlayerNode) {
-        player = node
-    }
+    var spritePointingDirection = "right"
     
-    func setRunningAnimation() {
-        
-        print("Game variables pointing direction: \(GameVariables.playerPointingDirection)")
-        print("RunningState pointing direction: \(spritePointingDirection)")
-        
-        if spritePointingDirection != GameVariables.playerPointingDirection {
-            
-            let flip = SKAction.scaleX(by: -1.0, y: 1.0, duration: 0.1)
-            player.run(flip)
-            spritePointingDirection = GameVariables.playerPointingDirection
-        }
-        
-        let runningAnimation: SKAction = SKAction.animate(with: runningTextures, timePerFrame: 0.1)
-        player.run(SKAction.repeatForever(runningAnimation), withKey: GameVariables.runningStatePlayerAnimation)
+    required init(with node: PlayerNode) {
+        player = node
     }
     
     override func didEnter(from previousState: GKState?) {
         if previousState != self {
-            player.removeAction(forKey: GameVariables.idleStatePlayerAnimation)
+            player.removeAllActions()
             setRunningAnimation()
         }
+    }
+
+    func setRunningAnimation() {
+
+        print("Game variables pointing direction: \(GameVariables.playerPointingDirection)")
+        print("RunningState pointing direction: \(spritePointingDirection)")
+
+        if spritePointingDirection != GameVariables.playerPointingDirection {
+
+            let flip = SKAction.scaleX(by: -1.0, y: 1.0, duration: 0.0)
+            player.run(flip)
+            spritePointingDirection = GameVariables.playerPointingDirection
+        }
+
+        let runningAnimation: SKAction = SKAction.animate(with: runningTextures, timePerFrame: 0.1)
+        player.run(SKAction.repeatForever(runningAnimation), withKey: animationKey)
     }
     
 }
