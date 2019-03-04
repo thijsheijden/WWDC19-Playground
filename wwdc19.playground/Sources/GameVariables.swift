@@ -18,7 +18,7 @@ public class GameVariables {
     
     // All the data for all the bugs
     public static let imageLabels = [["apple", "pear", "kiwi"], ["orange", "apple", "banana"]]
-    public static let correctAnswer = ["apple", "pear"]
-    public static let bugImage = [NSImage(imageLiteralResourceName: "laptop"), NSImage(imageLiteralResourceName: "chicken")]
+    public static let correctAnswer = [[true, false, false], [false, false, true]]
+    public static let bugImage = ["apple", "banana"]
     
 }

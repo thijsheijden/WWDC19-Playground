@@ -23,10 +23,6 @@ class RunningState: GKState {
     }
 
     func setRunningAnimation() {
-
-        print("Game variables pointing direction: \(GameVariables.playerPointingDirection)")
-        print("RunningState pointing direction: \(spritePointingDirection)")
-
         if spritePointingDirection != GameVariables.playerPointingDirection {
 
             let flip = SKAction.scaleX(by: -1.0, y: 1.0, duration: 0.0)

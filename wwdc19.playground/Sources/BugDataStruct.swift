@@ -2,14 +2,13 @@ import SpriteKit
 
 struct BugDataStruct {
     
-    var image: NSImage
+    var imageName: String
     var answerLabels: [String]
-    var correctAnswer: String
+    var correctAnswer: [Bool]
     
-    init(image: NSImage, answerLabels: [String], correctAnswer: String) {
-        self.image = image
+    init(imageName: String, answerLabels: [String], correctAnswer: [Bool]) {
+        self.imageName = imageName
         self.answerLabels = answerLabels
         self.correctAnswer = correctAnswer
     }
-    
 }

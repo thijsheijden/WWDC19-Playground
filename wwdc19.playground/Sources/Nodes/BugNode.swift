@@ -4,6 +4,8 @@ class BugNode: SKSpriteNode {
     
     var bugData: BugDataStruct?
     
+    var canCreatePopup: Bool = true
+    
     var maxX: CGFloat?
     var minX: CGFloat?
     
@@ -63,7 +65,7 @@ class BugNode: SKSpriteNode {
     }
     
     func createPopupNode() -> BugPopupNode {
-        let popupNode = BugPopupNode(texture: SKTexture(imageNamed: "laptop"), size: CGSize(width: 200.0, height: 200.0), bugData: self.bugData!)
+        let popupNode = BugPopupNode(size: CGSize(width: 500.0, height: 500.0), bugData: self.bugData!)
         return popupNode
     }
 }

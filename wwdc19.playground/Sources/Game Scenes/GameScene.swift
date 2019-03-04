@@ -6,8 +6,12 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var thePlayer: PlayerNode = PlayerNode()
     var cameraNode: SKCameraNode?
     
+    var movementEnabled: Bool = true
+    
     var bugNodeLocations: [CGPoint] = [CGPoint(x: 500, y: 80), CGPoint(x: -300, y: -150)]
     var bugNodes = [BugNode]()
+    
+    var canCurrentlyCollideWithBugNode: Bool = true
     
     override public func didMove(to view: SKView) {
         
@@ -40,7 +44,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func setupBugNodes() {
         for i in 0...bugNodeLocations.count-1 {
-            let bugNode = BugNode(texture: SKTexture(imageNamed: "chicken"), size: CGSize(width: 100, height: 100), bugData: BugDataStruct(image: GameVariables.bugImage[i], answerLabels: GameVariables.imageLabels[i], correctAnswer: GameVariables.correctAnswer[i]))
+            let bugNode = BugNode(texture: SKTexture(imageNamed: "chicken"), size: CGSize(width: 100, height: 100), bugData: BugDataStruct(imageName: GameVariables.bugImage[i], answerLabels: GameVariables.imageLabels[i], correctAnswer: GameVariables.correctAnswer[i]))
             bugNode.position = bugNodeLocations[i]
             bugNodes.append(bugNode)
             addBugNodesToView(bugNode: bugNode)
@@ -88,9 +92,11 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override public func update(_ currentTime: TimeInterval) {
-        thePlayer.getMovementSpeed()
-        updateCameraPosition()
-        updateBugPositions()
+        if movementEnabled {
+            thePlayer.getMovementSpeed()
+            updateCameraPosition()
+            updateBugPositions()
+        }
     }
     
     func updateBugPositions() {
@@ -106,7 +112,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     override public func keyDown(with event: NSEvent) {
         switch event.characters! {
         case let x where x == "a":
-            print("a")
             thePlayer.left = true
         case let x where x == "d":
             thePlayer.right = true
@@ -142,17 +147,28 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.bug.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.developer.rawValue {
+        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.bug.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.developer.rawValue && canCurrentlyCollideWithBugNode {
+            canCurrentlyCollideWithBugNode = false
+            movementEnabled = false
             if let bugNode = contact.bodyA.node as? BugNode {
                 bugNode.removeFromParent()
                 let popup = bugNode.createPopupNode()
                 let centerFramePosition = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
                 popup.position = centerFramePosition
+                popup.delegate = self
                 self.addChild(popup)
             }
         }
     }
     
+}
+
+// Conforming to the delegate for the bug popup so we know when a user has selected the correct answer
+extension GameScene: BugPopupCorrectAnswerDelegate {
+    func answeredCorrectly() {
+        canCurrentlyCollideWithBugNode = true
+        movementEnabled = true
+    }
 }
 
 
