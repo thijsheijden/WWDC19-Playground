@@ -5,11 +5,17 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
 
     var thePlayer: PlayerNode = PlayerNode()
     var cameraNode: SKCameraNode?
+    var dimPanel: SKSpriteNode?
+    var bugsFixedLabel: SKLabelNode?
     
     var movementEnabled: Bool = true
     
-    var bugNodeLocations: [CGPoint] = [CGPoint(x: 500, y: 80), CGPoint(x: -300, y: -150)]
+    var numberOfBugsFixed: Int = 0
+    
+    var bugNodeLocations: [CGPoint] = [CGPoint(x: 883, y: 229), CGPoint(x: 37, y: 308)]
     var bugNodes = [BugNode]()
+    
+    var developerNodesLocations: [CGPoint] = [CGPoint(x: 100, y: -150.0), CGPoint(x: 995, y: 520)]
     
     var canCurrentlyCollideWithBugNode: Bool = true
     
@@ -23,6 +29,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         addChildNodesToView()
         setupBugNodes()
         setupAndAddDeveloperNode()
+        setupAndAddBugsFixedLabel()
         
         
         self.view?.showsFPS = true
@@ -44,7 +51,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func setupBugNodes() {
         for i in 0...bugNodeLocations.count-1 {
-            let bugNode = BugNode(texture: SKTexture(imageNamed: "chicken"), size: CGSize(width: 100, height: 100), bugData: BugDataStruct(imageName: GameVariables.bugImage[i], answerLabels: GameVariables.imageLabels[i], correctAnswer: GameVariables.correctAnswer[i]))
+            let bugNode = BugNode(texture: SKTexture(imageNamed: "bug-1"), size: CGSize(width: 100, height: 100), bugData: BugDataStruct(imageName: GameVariables.bugImage[i], answerLabels: GameVariables.imageLabels[i], correctAnswer: GameVariables.correctAnswer[i]))
             bugNode.position = bugNodeLocations[i]
             bugNodes.append(bugNode)
             addBugNodesToView(bugNode: bugNode)
@@ -55,10 +62,19 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(bugNode)
     }
     
+    func setupAndAddBugsFixedLabel() {
+        bugsFixedLabel = SKLabelNode(text: "0/6 bugs fixed")
+        bugsFixedLabel?.fontSize = 20.0
+        bugsFixedLabel?.position = CGPoint(x: -500, y: 250)
+        self.cameraNode?.addChild(bugsFixedLabel!)
+    }
+    
     func setupAndAddDeveloperNode() {
-        let developerNode = DeveloperNode(texture: SKTexture(imageNamed: "laptop"), size: CGSize(width: 100.0, height: 50.0))
-        developerNode.position = CGPoint(x: 0.0, y: -150.0)
-        self.addChild(developerNode)
+        for developerNodeLocation in developerNodesLocations {
+            let developerNode = DeveloperNode(texture: SKTexture(imageNamed: "laptop"), size: CGSize(width: 100.0, height: 70.0))
+            developerNode.position = developerNodeLocation
+            self.addChild(developerNode)
+        }
     }
     
     @objc static override public var supportsSecureCoding: Bool {
@@ -107,6 +123,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func updateCameraPosition() {
         cameraNode?.position = thePlayer.position
+        print(thePlayer.position)
     }
     
     override public func keyDown(with event: NSEvent) {
@@ -148,17 +165,37 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.bug.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.developer.rawValue && canCurrentlyCollideWithBugNode {
-            canCurrentlyCollideWithBugNode = false
-            movementEnabled = false
-            if let bugNode = contact.bodyA.node as? BugNode {
-                bugNode.removeFromParent()
-                let popup = bugNode.createPopupNode()
-                let centerFramePosition = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
-                popup.position = centerFramePosition
-                popup.delegate = self
-                self.addChild(popup)
+            
+            if let developerNode = contact.bodyB.node as? DeveloperNode {
+                if !developerNode.isBusy {
+                    canCurrentlyCollideWithBugNode = false
+                    movementEnabled = false
+                    developerNode.isBusy = true
+                    if let bugNode = contact.bodyA.node as? BugNode {
+                        bugNode.removeFromParent()
+                        let popup = bugNode.createPopupNode()
+                        let centerFramePosition = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
+                        popup.position = centerFramePosition
+                        popup.delegate = self
+                        addDimPanelBehindPopup()
+                        popup.run(SKAction.fadeIn(withDuration: 1.0))
+                        self.addChild(popup)
+                    }
+                } else {
+                    print("Sorry this developer is busy")
+                }
             }
         }
+    }
+    
+    // Method which adds a dark background behind the popup.
+    func addDimPanelBehindPopup() {
+        dimPanel = SKSpriteNode(color: NSColor.black, size: self.size)
+        dimPanel!.alpha = 0.0
+        dimPanel!.zPosition = 100
+        dimPanel!.position = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
+        dimPanel!.run(SKAction.fadeAlpha(to: 0.75, duration: 1.0))
+        self.addChild(dimPanel!)
     }
     
 }
@@ -168,6 +205,14 @@ extension GameScene: BugPopupCorrectAnswerDelegate {
     func answeredCorrectly() {
         canCurrentlyCollideWithBugNode = true
         movementEnabled = true
+        numberOfBugsFixed += 1
+        updateNumberOfBugsFixedLabel()
+        dimPanel!.run(SKAction.fadeAlpha(to: 0.0, duration: 1.0))
+        dimPanel?.removeFromParent()
+    }
+    
+    func updateNumberOfBugsFixedLabel() {
+        bugsFixedLabel?.text = "\(numberOfBugsFixed)/6 bugs fixed"
     }
 }
 

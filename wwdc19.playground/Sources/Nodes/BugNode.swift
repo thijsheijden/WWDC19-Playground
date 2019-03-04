@@ -21,6 +21,7 @@ class BugNode: SKSpriteNode {
         self.bugData = bugData
         isUserInteractionEnabled = true
         setupPhysics(texture: texture, size: size)
+        setMovingTextures()
     }
     
     func setupPhysics(texture: SKTexture, size: CGSize) {
@@ -30,6 +31,12 @@ class BugNode: SKSpriteNode {
         self.physicsBody?.categoryBitMask = GameVariables.ColliderType.bug.rawValue
         self.physicsBody?.collisionBitMask = GameVariables.ColliderType.platform.rawValue | GameVariables.ColliderType.developer.rawValue
         self.physicsBody?.contactTestBitMask = GameVariables.ColliderType.platform.rawValue | GameVariables.ColliderType.developer.rawValue
+    }
+    
+    func setMovingTextures() {
+        let movingTextures: [SKTexture] = [SKTexture(imageNamed: "bug-1"), SKTexture(imageNamed: "bug-2")]
+        let movingAnimation: SKAction = SKAction.animate(with: movingTextures, timePerFrame: 0.4)
+        self.run(SKAction.repeatForever(movingAnimation))
     }
     
     override func mouseDown(with event: NSEvent) {

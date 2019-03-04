@@ -13,6 +13,7 @@ class BugPopupAnswerButtonNode: SKSpriteNode {
     
     init(text: String, size: CGSize, answer: String, correctAnswer: Bool) {
         super.init(texture: nil, color: SKColor.white, size: size)
+        self.alpha = 0.0
         isUserInteractionEnabled = true
         self.answer = answer
         self.correctAnswer = correctAnswer

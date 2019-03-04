@@ -14,8 +14,6 @@ public class GameVariables {
         case platform = 3
     }
     
-    
-    
     // All the data for all the bugs
     public static let imageLabels = [["apple", "pear", "kiwi"], ["orange", "apple", "banana"]]
     public static let correctAnswer = [[true, false, false], [false, false, true]]

@@ -2,6 +2,8 @@ import SpriteKit
 
 class DeveloperNode: SKSpriteNode {
     
+    var isBusy: Bool = false
+    
     required init(coder: NSCoder) {
         fatalError("NSCoding not supported")
     }
@@ -17,6 +19,12 @@ class DeveloperNode: SKSpriteNode {
         self.physicsBody?.categoryBitMask = GameVariables.ColliderType.developer.rawValue
         self.physicsBody?.collisionBitMask = GameVariables.ColliderType.bug.rawValue
         self.physicsBody?.contactTestBitMask = GameVariables.ColliderType.bug.rawValue
+    }
+    
+    // Method which makes this developer busy, meaning he cant be used for bug fixing anymore
+    func setDeveloperToBusy() {
+        isBusy = true
+        // Change texture to busy texture, and developer gameState to busy
     }
     
 }
