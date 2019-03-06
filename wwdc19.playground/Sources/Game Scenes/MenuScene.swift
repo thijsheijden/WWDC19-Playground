@@ -16,7 +16,7 @@ public class MenuScene: SKScene {
                 self.scene!.scaleMode = .aspectFill
                 
                 // Present the scene
-                GameVariables.sceneView.presentScene(scene)
+                GameVariables.sceneView.presentScene(scene, transition: SKTransition.moveIn(with: SKTransitionDirection.right, duration: 2.5))
             }
         }
         self.addChild(startButton)

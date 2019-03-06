@@ -12,10 +12,10 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var numberOfBugsFixed: Int = 0
     
-    var bugNodeLocations: [CGPoint] = [CGPoint(x: 883, y: 229), CGPoint(x: 37, y: 308)]
+    var bugNodeLocations: [CGPoint] = [CGPoint(x: 883, y: 229), CGPoint(x: 37, y: 308), CGPoint(x: 1970, y: 730)]
     var bugNodes = [BugNode]()
     
-    var developerNodesLocations: [CGPoint] = [CGPoint(x: 100, y: -150.0), CGPoint(x: 995, y: 520)]
+    var developerNodesLocations: [CGPoint] = [CGPoint(x: 100, y: -150.0), CGPoint(x: 995, y: 520), CGPoint(x: 2890, y: 420)]
     
     var canCurrentlyCollideWithBugNode: Bool = true
     
@@ -30,6 +30,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         setupBugNodes()
         setupAndAddDeveloperNode()
         setupAndAddBugsFixedLabel()
+        setupAndAddNextLevelDoorNode()
         
         
         self.view?.showsFPS = true
@@ -67,6 +68,12 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         bugsFixedLabel?.fontSize = 20.0
         bugsFixedLabel?.position = CGPoint(x: -500, y: 250)
         self.cameraNode?.addChild(bugsFixedLabel!)
+    }
+    
+    func setupAndAddNextLevelDoorNode() {
+        let nextLevelDoorNode = DoorNode(texture: SKTexture(imageNamed: "apple"), size: CGSize(width: 100.0, height: 100.0))
+        nextLevelDoorNode.position = CGPoint(x: 300.0, y: 50.0)
+        self.addChild(nextLevelDoorNode)
     }
     
     func setupAndAddDeveloperNode() {
@@ -123,7 +130,6 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func updateCameraPosition() {
         cameraNode?.position = thePlayer.position
-        print(thePlayer.position)
     }
     
     override public func keyDown(with event: NSEvent) {
@@ -155,12 +161,23 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     // When a collision is detected in the scene
     public func didBegin(_ contact: SKPhysicsContact) {
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.platform.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.player.rawValue {
-            thePlayer.currentlyTouchingGround = true
+            if playerTouchingTopOfPlatform(frame: (contact.bodyA.node?.frame)!) {
+                thePlayer.currentlyTouchingGround = true
+            }
         }
         
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.platform.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.bug.rawValue {
             if let bugNode = contact.bodyB.node as? BugNode {
                 bugNode.setMovementBoundaries(minX: (contact.bodyA.node?.frame.minX)!, maxX: (contact.bodyA.node?.frame.maxX)!)
+            }
+        }
+        
+        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.nextLevelDoor.rawValue {
+            print((bugsFixedLabel?.text)!)
+            if (bugsFixedLabel?.text)! == "1/6 bugs fixed" {
+                if let nextScene = BugTestingScene(fileNamed: "BugTestingScene") {
+                    GameVariables.sceneView.presentScene(nextScene, transition: SKTransition.push(with: SKTransitionDirection.left, duration: 2.5))
+                }
             }
         }
         
@@ -186,6 +203,11 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
+    }
+    
+    // Method which calculates wether the player touched the top of the platform or not
+    func playerTouchingTopOfPlatform(frame: CGRect) -> Bool {
+        return (thePlayer.frame.minY - 2.50) < frame.maxY
     }
     
     // Method which adds a dark background behind the popup.

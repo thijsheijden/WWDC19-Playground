@@ -33,11 +33,11 @@ class PlayerNode: SKSpriteNode {
             stateMachine?.enter(RunningState.self)
             movePlayer()
         case (false, false, true):
-            jumpPlayer()
+            jumpPlayer(horizontalMovement: horizontalMovementSpeed)
         case (true, false, true):
-            jumpPlayer()
+            jumpPlayer(horizontalMovement: horizontalMovementSpeed)
         case (false, true, true):
-            jumpPlayer()
+            jumpPlayer(horizontalMovement: horizontalMovementSpeed)
         default:
             horizontalMovementSpeed = 0.0
             stateMachine?.enter(IdleState.self)
@@ -48,9 +48,9 @@ class PlayerNode: SKSpriteNode {
         self.position.x += horizontalMovementSpeed
     }
     
-    func jumpPlayer() {
+    func jumpPlayer(horizontalMovement: CGFloat) {
         if currentlyTouchingGround {
-            self.physicsBody?.applyImpulse(CGVector(dx: 0.0, dy: 250.0))
+            self.physicsBody?.applyImpulse(CGVector(dx: horizontalMovementSpeed*20, dy: 350.0))
             currentlyTouchingGround = false
         }
     }
@@ -73,8 +73,8 @@ class PlayerNode: SKSpriteNode {
         self.physicsBody = SKPhysicsBody(texture: texture, size: size)
         self.physicsBody?.allowsRotation = false
         self.physicsBody?.categoryBitMask = GameVariables.ColliderType.player.rawValue
-        self.physicsBody?.collisionBitMask = GameVariables.ColliderType.platform.rawValue
-        self.physicsBody?.contactTestBitMask = GameVariables.ColliderType.platform.rawValue
+        self.physicsBody?.collisionBitMask = GameVariables.ColliderType.platform.rawValue | GameVariables.ColliderType.nextLevelDoor.rawValue
+        self.physicsBody?.contactTestBitMask = GameVariables.ColliderType.platform.rawValue | GameVariables.ColliderType.nextLevelDoor.rawValue
     }
     
 }
