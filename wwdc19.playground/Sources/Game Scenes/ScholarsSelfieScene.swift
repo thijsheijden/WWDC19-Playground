@@ -1,7 +1,7 @@
 import PlaygroundSupport
 import SpriteKit
 
-public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
+public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
     
     var cameraNode: SKCameraNode?
     var thePlayer: PlayerNode = PlayerNode()

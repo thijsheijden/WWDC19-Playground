@@ -7,6 +7,15 @@ extension SKLabelNode {
         
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { (timer) in
             
+            if text[atCharacter] == "/" {
+                atCharacter += 1
+            }
+            
+            if text[atCharacter] == "{" {
+                atCharacter += 1
+                self.text? = ""
+            }
+            
             while text[atCharacter] == " " {
                 self.text?.append(" ")
                 atCharacter += 1
@@ -16,9 +25,11 @@ extension SKLabelNode {
                 }
             }
             
-            self.text?.append(text[atCharacter])
-            print(text[atCharacter])
-            atCharacter += 1
+            if text[atCharacter] != "/" && text[atCharacter] != "{" {
+                self.text?.append(text[atCharacter])
+                atCharacter += 1
+            }
+            
             if atCharacter == text.count {
                 timer.invalidate()
             }

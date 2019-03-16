@@ -50,7 +50,7 @@ class PlayerNode: SKSpriteNode {
     
     func jumpPlayer(horizontalMovement: CGFloat) {
         if currentlyTouchingGround {
-            self.physicsBody?.applyImpulse(CGVector(dx: horizontalMovementSpeed*20, dy: 350.0))
+            self.physicsBody?.applyImpulse(CGVector(dx: horizontalMovementSpeed*5, dy: 200.0))
             currentlyTouchingGround = false
         }
     }

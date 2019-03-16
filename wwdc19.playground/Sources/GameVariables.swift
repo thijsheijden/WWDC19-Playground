@@ -6,7 +6,7 @@ public class GameVariables {
     public static let sceneView = SKView(frame: CGRect(x:0 , y:0, width: 1200, height: 600))
     
     // All the cutscene text lines
-    public static var firstCutSceneText = ["7:30 AM, morning of the WWDC19 keynote.", "Test test test"]
+    public static var firstCutSceneText = "Hey there!//////{It's 7:00 AM, the morning of the keynote.//////{I have some things I need to do.//////{First I will need to fix some of the bugs in the{new CoreML release."
     
     public static var playerPointingDirection = "right"
     
