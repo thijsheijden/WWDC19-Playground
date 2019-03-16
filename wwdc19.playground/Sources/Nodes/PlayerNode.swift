@@ -55,6 +55,10 @@ class PlayerNode: SKSpriteNode {
         }
     }
     
+    func jumpPadTouched() {
+        self.physicsBody?.applyImpulse(CGVector(dx: 0.0, dy: 350.0))
+    }
+    
     func setupPlayerNode(texture: SKTexture?, size: CGSize, position: CGPoint) {
         self.texture = texture
         self.size = size

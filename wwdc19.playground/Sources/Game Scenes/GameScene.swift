@@ -17,6 +17,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var developerNodesLocations: [CGPoint] = [CGPoint(x: 100, y: -150.0), CGPoint(x: 995, y: 520), CGPoint(x: 2890, y: 420)]
     
+    var jumpPadNodeLocations: [CGPoint] = [CGPoint(x: -670.0, y: -125.0), CGPoint(x: 2190.0, y: -125.0)]
+    
     var canCurrentlyCollideWithBugNode: Bool = true
     
     override public func didMove(to view: SKView) {
@@ -31,6 +33,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         setupAndAddDeveloperNode()
         setupAndAddBugsFixedLabel()
         setupAndAddNextLevelDoorNode()
+        setupJumpPads()
         
         
         self.view?.showsFPS = true
@@ -81,6 +84,14 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             let developerNode = DeveloperNode(texture: SKTexture(imageNamed: "laptop"), size: CGSize(width: 100.0, height: 70.0))
             developerNode.position = developerNodeLocation
             self.addChild(developerNode)
+        }
+    }
+    
+    func setupJumpPads() {
+        for position in jumpPadNodeLocations {
+            let jumpPad = JumpPadNode(texture: SKTexture(imageNamed: "chicken"), size: CGSize(width: 100.0, height: 50.0))
+            jumpPad.position = position
+            self.addChild(jumpPad)
         }
     }
     
@@ -160,6 +171,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // When a collision is detected in the scene
     public func didBegin(_ contact: SKPhysicsContact) {
+        // Collision between platform and player
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.platform.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.player.rawValue {
             if playerTouchingTopOfPlatform(frame: (contact.bodyA.node?.frame)!) {
                 thePlayer.currentlyTouchingGround = true
@@ -169,6 +181,16 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.platform.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.bug.rawValue {
             if let bugNode = contact.bodyB.node as? BugNode {
                 bugNode.setMovementBoundaries(minX: (contact.bodyA.node?.frame.minX)!, maxX: (contact.bodyA.node?.frame.maxX)!)
+            }
+        }
+        
+        // Collision between player and ladder
+        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.jumpPad.rawValue {
+            if let jumpPad = contact.bodyB.node as? JumpPadNode {
+                if jumpPad.active {
+                    jumpPad.activated()
+                    thePlayer.jumpPadTouched()
+                }
             }
         }
         
