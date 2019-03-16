@@ -17,6 +17,7 @@ public class GameVariables {
         case platform = 6
         case nextLevelDoor = 8
         case jumpPad = 10
+        case scholar = 12
     }
     
     // All the data for all the bugs

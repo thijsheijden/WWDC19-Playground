@@ -3,9 +3,15 @@ import SpriteKit
 
 public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
     
+    var movementEnabled: Bool = true
+    
     var cameraNode: SKCameraNode?
     var thePlayer: PlayerNode = PlayerNode()
     var drawingCanvas: NSView?
+    var selfiePanel: SKSpriteNode?
+    
+    var scholarNodes: [ScholarNode] = [ScholarNode]()
+    var scholarNodeLocations: [CGPoint] = [CGPoint(x: 100.0, y: 100.0)]
     
     override public func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
@@ -13,6 +19,9 @@ public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
         cameraNode = SKCameraNode()
         setupCamera()
         setupPlayer()
+        setupScholarNodes()
+        
+        self.view?.showsNodeCount = true
     }
     
     func setupPlayer() {
@@ -26,9 +35,29 @@ public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
         camera = cameraNode
     }
     
+    // Method which sets up all the scholar nodes
+    func setupScholarNodes() {
+        for scholarNodeLocation in scholarNodeLocations {
+            let scholarNode = ScholarNode(texture: SKTexture(imageNamed: "chicken"), size: CGSize(width: 100.0, height: 50.0))
+            scholarNode.position = scholarNodeLocation
+            scholarNodes.append(scholarNode)
+            self.addChild(scholarNode)
+        }
+    }
+    
     override public func update(_ currentTime: TimeInterval) {
-        thePlayer.getMovementSpeed()
+        if movementEnabled {
+            thePlayer.getMovementSpeed()
+            updateScholarNodeLocations()
+        }
         updateCameraPosition()
+    }
+    
+    // Method which loops through all the scholar nodes and updates their positions, based on the players location
+    func updateScholarNodeLocations() {
+        for scholar in scholarNodes {
+            scholar.checkWhereTimIs(timPosition: thePlayer.position)
+        }
     }
     
     func updateCameraPosition() {
@@ -73,6 +102,20 @@ public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
         
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.nextLevelDoor.rawValue {
         }
+        
+        // Detecting collision between a scholar and a platform
+        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.platform.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.scholar.rawValue {
+            if let scholarNode = contact.bodyB.node as? ScholarNode {
+                scholarNode.setMovementBoundaries(minX: (contact.bodyA.node?.frame.minX)!, maxX: (contact.bodyA.node?.frame.maxX)!)
+            }
+        }
+        
+        // Detecting collision between scholar node and player node
+        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.scholar.rawValue {
+            movementEnabled = false
+            contact.bodyB.node?.removeFromParent()
+            takeSelfie()
+        }
     }
     
     // Method which calculates wether the player touched the top of the platform or not
@@ -80,6 +123,19 @@ public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
         return (thePlayer.frame.minY - 2.50) < frame.maxY
     }
     
+    // Method which imitates taking a selfie, by making the screen bright white and playing the camera shutter sound
+    func takeSelfie() {
+        selfiePanel = SKSpriteNode(color: NSColor.white, size: self.size)
+        selfiePanel!.alpha = 0.0
+        selfiePanel!.zPosition = 100
+        selfiePanel!.position = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
+        selfiePanel!.run(SKAction.sequence([SKAction.fadeAlpha(to: 1.0, duration: 0.4), SKAction.fadeAlpha(to: 0.0, duration: 0.6)])) { () -> Void in
+            self.movementEnabled = true
+            self.removeFromParent()
+        }
+        self.addChild(selfiePanel!)
+        // TODO: Add camera shutter sound
+    }
 }
 
 
