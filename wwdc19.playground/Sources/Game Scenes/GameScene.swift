@@ -7,6 +7,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var cameraNode: SKCameraNode?
     var dimPanel: SKSpriteNode?
     var bugsFixedLabel: SKLabelNode?
+    var textLineNode: TextLineNode?
     
     var movementEnabled: Bool = true
     
@@ -34,7 +35,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         setupAndAddBugsFixedLabel()
         setupAndAddNextLevelDoorNode()
         setupJumpPads()
-        
+        setupTextLineNode()
         
         self.view?.showsFPS = true
         self.view?.showsNodeCount = true
@@ -93,6 +94,14 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             jumpPad.position = position
             self.addChild(jumpPad)
         }
+    }
+    
+    func setupTextLineNode() {
+        textLineNode = TextLineNode(texture: SKTexture(imageNamed: "platform-1"), size: CGSize(width: self.size.width - 200.0, height: 100.0))
+        textLineNode?.position = CGPoint(x: 0.0, y: -200)
+        textLineNode?.zPosition = 100
+        self.cameraNode?.addChild(textLineNode!)
+        textLineNode?.startTypingText(text: GameVariables.gameSceneText)
     }
     
     @objc static override public var supportsSecureCoding: Bool {

@@ -24,7 +24,15 @@ public class IntroCutScene: SKScene {
         cutsceneLabel1 = self.childNode(withName: "cutsceneLabel") as? SKLabelNode
         cutsceneLabel1?.text? = ""
         cutsceneLabel1?.preferredMaxLayoutWidth = 300.0
-        cutsceneLabel1?.typeOutText(text: GameVariables.firstCutSceneText)
+        cutsceneLabel1?.typeOutText(text: GameVariables.firstCutSceneText) { () -> Void in
+            self.presentGameScene()
+        }
+    }
+    
+    func presentGameScene() {
+        if let gameScene = GameScene(fileNamed: "GameScene") {
+            GameVariables.sceneView.presentScene(gameScene, transition: SKTransition.push(with: SKTransitionDirection.left, duration: 2.5))
+        }
     }
     
     func zoomInCamera() {

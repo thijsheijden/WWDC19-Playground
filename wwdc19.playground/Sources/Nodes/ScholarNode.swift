@@ -7,7 +7,10 @@ class ScholarNode: SKSpriteNode {
     var minX: CGFloat?
     
     // The scholar node's movement speed
-    var movementSpeed: CGFloat = 2.0
+    var movementSpeed: CGFloat = CGFloat.random(in: 1 ... 4)
+    
+    // The variable which stores movement speed when paused
+    var pausedMovementSpeed: CGFloat = 0.0
     
     required init(coder: NSCoder) {
         fatalError("NSCoding not supported")
@@ -15,6 +18,7 @@ class ScholarNode: SKSpriteNode {
     
     init(texture: SKTexture, size: CGSize) {
         super.init(texture: texture, color: SKColor.white, size: size)
+        self.isUserInteractionEnabled = true
         setupPhysics(texture: texture, size: size)
         setMovingTextures()
     }
@@ -22,7 +26,7 @@ class ScholarNode: SKSpriteNode {
     // Setting up the scholar node's physics body
     func setupPhysics(texture: SKTexture, size: CGSize) {
         self.physicsBody = SKPhysicsBody(texture: texture, size: size)
-        self.physicsBody?.allowsRotation = true
+        self.physicsBody?.allowsRotation = false
         self.physicsBody?.affectedByGravity = true
         self.physicsBody?.categoryBitMask = GameVariables.ColliderType.scholar.rawValue
         self.physicsBody?.collisionBitMask = GameVariables.ColliderType.player.rawValue | GameVariables.ColliderType.platform.rawValue
@@ -46,14 +50,36 @@ class ScholarNode: SKSpriteNode {
         }
     }
     
+    override func mouseDown(with event: NSEvent) {
+        self.physicsBody?.affectedByGravity = false
+        self.pausedMovementSpeed = movementSpeed
+        movementSpeed = 0.0
+    }
+    
+    override func mouseDragged(with event: NSEvent) {
+        let deltaX = event.deltaX
+        let deltaY = event.deltaY
+        
+        self.position.x += deltaX * 1.5
+        self.position.y -= deltaY * 1.5
+    }
+    
+    override func mouseUp(with event: NSEvent) {
+        self.physicsBody?.affectedByGravity = true
+        self.movementSpeed = pausedMovementSpeed
+    }
+    
     // Method which checks where tim is and then changes the movement speed to go that direction, also checks wether its about to fall off a platform in case it is on a platform
     func checkWhereTimIs(timPosition: CGPoint) {
         if self.position.x >= timPosition.x {
-            movementSpeed = -2.0
-            moveOnPlatform()
+            if movementSpeed > 0 {
+                movementSpeed *= -1
+            }
         } else if self.position.x < timPosition.x {
-            movementSpeed = 2.0
-            moveOnPlatform()
+            if movementSpeed < 0 {
+                movementSpeed *= -1
+            }
         }
+        moveOnPlatform()
     }
 }

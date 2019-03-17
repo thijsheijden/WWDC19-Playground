@@ -1,17 +1,21 @@
 import PlaygroundSupport
 import SpriteKit
+import AVFoundation
 
 public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
     
     var movementEnabled: Bool = true
+    var canTakeSelfie: Bool = true
     
     var cameraNode: SKCameraNode?
     var thePlayer: PlayerNode = PlayerNode()
     var drawingCanvas: NSView?
     var selfiePanel: SKSpriteNode?
     
+    var audioPlayer: AVAudioPlayer?
+    
     var scholarNodes: [ScholarNode] = [ScholarNode]()
-    var scholarNodeLocations: [CGPoint] = [CGPoint(x: 100.0, y: 100.0)]
+    var scholarNodeLocations: [CGPoint] = [CGPoint(x: 100.0, y: 100.0), CGPoint(x: 150.0, y: 100.0), CGPoint(x: 100.0, y: -170.0), CGPoint(x: 160.0, y: -170.0), CGPoint(x: 220.0, y: -170.0), CGPoint(x: 300.0, y: -170.0)]
     
     override public func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
@@ -33,6 +37,7 @@ public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
     func setupCamera() {
         self.addChild(cameraNode!)
         camera = cameraNode
+        cameraNode?.setScale(1.5)
     }
     
     // Method which sets up all the scholar nodes
@@ -112,9 +117,12 @@ public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
         
         // Detecting collision between scholar node and player node
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.scholar.rawValue {
-            movementEnabled = false
-            contact.bodyB.node?.removeFromParent()
-            takeSelfie()
+            if canTakeSelfie {
+                canTakeSelfie = false
+                movementEnabled = false
+                contact.bodyB.node?.removeFromParent()
+                takeSelfie()
+            }
         }
     }
     
@@ -125,16 +133,24 @@ public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
     
     // Method which imitates taking a selfie, by making the screen bright white and playing the camera shutter sound
     func takeSelfie() {
-        selfiePanel = SKSpriteNode(color: NSColor.white, size: self.size)
+        selfiePanel = SKSpriteNode(color: NSColor.white, size: CGSize(width: self.size.width + 1500, height: self.size.height + 1500))
         selfiePanel!.alpha = 0.0
         selfiePanel!.zPosition = 100
         selfiePanel!.position = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
+        self.addChild(selfiePanel!)
         selfiePanel!.run(SKAction.sequence([SKAction.fadeAlpha(to: 1.0, duration: 0.4), SKAction.fadeAlpha(to: 0.0, duration: 0.6)])) { () -> Void in
             self.movementEnabled = true
             self.removeFromParent()
+            self.canTakeSelfie = true
         }
-        self.addChild(selfiePanel!)
-        // TODO: Add camera shutter sound
+        do {
+            let cameraSoundEffect = URL(fileURLWithPath: Bundle.main.path(forResource: "cameraSoundEffect", ofType: "mp3")!)
+            audioPlayer = try AVAudioPlayer(contentsOf: cameraSoundEffect)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
 }
 
