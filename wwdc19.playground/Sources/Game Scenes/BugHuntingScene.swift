@@ -1,8 +1,9 @@
 import PlaygroundSupport
 import SpriteKit
 
-public class GameScene: SKScene, SKPhysicsContactDelegate {
+public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
 
+    // All the variables and constants in this scene
     var thePlayer: PlayerNode = PlayerNode()
     var cameraNode: SKCameraNode?
     var dimPanel: SKSpriteNode?
@@ -22,11 +23,13 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var canCurrentlyCollideWithBugNode: Bool = true
     
+    // Moved to this scene
     override public func didMove(to view: SKView) {
         
+        // Conforming to this delegate to receive colision information
         physicsWorld.contactDelegate = self
         
-        thePlayer.setupPlayerNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 64, height: 192), position: CGPoint(x: 0, y: 0))
+        thePlayer.setupPlayerNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 64, height: 192), position: CGPoint(x: 0, y: -64))
         thePlayer.setupStateMachine()
         cameraNode = SKCameraNode()
         addChildNodesToView()
@@ -41,19 +44,21 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.view?.showsNodeCount = true
 //        self.view?.showsPhysics = true
 //        self.view?.showsFields = true
-        
     }
     
+    // Adding some of the created children to the scene
     func addChildNodesToView() {
         self.addChild(thePlayer)
         self.addChild(cameraNode!)
         setupCamera()
     }
     
+    // Setting up the camera
     func setupCamera() {
         camera = cameraNode
     }
     
+    // Setting up all the bugnodes with their corresponding locations in the scene
     func setupBugNodes() {
         for i in 0...bugNodeLocations.count-1 {
             let bugNode = BugNode(texture: SKTexture(imageNamed: "bug-1"), size: CGSize(width: 100, height: 100), bugData: BugDataStruct(imageName: GameVariables.bugImage[i], answerLabels: GameVariables.imageLabels[i], correctAnswer: GameVariables.correctAnswer[i]))
@@ -63,23 +68,28 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // Adding those bug nodes to the scene one by one
     func addBugNodesToView(bugNode: BugNode) {
         self.addChild(bugNode)
     }
     
+    // Setting up the label which displays how many bugs you have fixed, shown top right of the camera frame
     func setupAndAddBugsFixedLabel() {
         bugsFixedLabel = SKLabelNode(text: "0/6 bugs fixed")
+        bugsFixedLabel?.fontName = "Minecraft"
         bugsFixedLabel?.fontSize = 20.0
         bugsFixedLabel?.position = CGPoint(x: -500, y: 250)
         self.cameraNode?.addChild(bugsFixedLabel!)
     }
     
+    // Setting up and adding the door which takes the player to the next level
     func setupAndAddNextLevelDoorNode() {
         let nextLevelDoorNode = DoorNode(texture: SKTexture(imageNamed: "apple"), size: CGSize(width: 100.0, height: 100.0))
         nextLevelDoorNode.position = CGPoint(x: 300.0, y: 50.0)
         self.addChild(nextLevelDoorNode)
     }
     
+    // Setting up and adding the developer nodes to the scene at set locations
     func setupAndAddDeveloperNode() {
         for developerNodeLocation in developerNodesLocations {
             let developerNode = DeveloperNode(texture: SKTexture(imageNamed: "laptop"), size: CGSize(width: 100.0, height: 70.0))
@@ -88,6 +98,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // Setting up the jumppad nodes and adding them to the scene
     func setupJumpPads() {
         for position in jumpPadNodeLocations {
             let jumpPad = JumpPadNode(texture: SKTexture(imageNamed: "chicken"), size: CGSize(width: 100.0, height: 50.0))
@@ -96,6 +107,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // Setting up the node which displays in the bottom of the screen and just shows some text
     func setupTextLineNode() {
         textLineNode = TextLineNode(texture: SKTexture(imageNamed: "platform-1"), size: CGSize(width: self.size.width - 200.0, height: 100.0))
         textLineNode?.position = CGPoint(x: 0.0, y: -200)
@@ -134,6 +146,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     override public func mouseUp(with event: NSEvent) {
     }
     
+    // Method which gets called every 1/60th of a second to update for the next frame
     override public func update(_ currentTime: TimeInterval) {
         if movementEnabled {
             thePlayer.getMovementSpeed()
@@ -142,16 +155,19 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // Updating the positions of the bugs every frame update
     func updateBugPositions() {
         for bug in bugNodes {
             bug.moveOnPlatform()
         }
     }
     
+    // Updating the camera node position to be centered on the player
     func updateCameraPosition() {
         cameraNode?.position = thePlayer.position
     }
     
+    // Registering key down events with their corresponding actions
     override public func keyDown(with event: NSEvent) {
         switch event.characters! {
         case let x where x == "a":
@@ -165,6 +181,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // Registering key up events with their corresponding actions
     public override func keyUp(with event: NSEvent) {
         switch event.characters! {
         case let x where x == "a":
@@ -187,6 +204,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        // When a colision is detected between a platform and a bug, the bug receives the maxX and minX values for that platform so it never falls of
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.platform.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.bug.rawValue {
             if let bugNode = contact.bodyB.node as? BugNode {
                 bugNode.setMovementBoundaries(minX: (contact.bodyA.node?.frame.minX)!, maxX: (contact.bodyA.node?.frame.maxX)!)
@@ -203,15 +221,17 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        // Colision between player and next level door
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.nextLevelDoor.rawValue {
             print((bugsFixedLabel?.text)!)
-            if (bugsFixedLabel?.text)! == "1/6 bugs fixed" {
+            if (bugsFixedLabel?.text)! == "3/6 bugs fixed" {
                 if let nextScene = BugTestingScene(fileNamed: "BugTestingScene") {
                     GameVariables.sceneView.presentScene(nextScene, transition: SKTransition.push(with: SKTransitionDirection.left, duration: 2.5))
                 }
             }
         }
         
+        // Colision between bug and developer nodes. Popup with question gets displayed
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.bug.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.developer.rawValue && canCurrentlyCollideWithBugNode {
             
             if let developerNode = contact.bodyB.node as? DeveloperNode {
@@ -251,10 +271,12 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(dimPanel!)
     }
     
+    // TODO: add a button to all the scenes which zooms the scene out so the player can see more of the level, clicking the button again zooms back in
+    
 }
 
 // Conforming to the delegate for the bug popup so we know when a user has selected the correct answer
-extension GameScene: BugPopupCorrectAnswerDelegate {
+extension BugHuntingScene: BugPopupCorrectAnswerDelegate {
     func answeredCorrectly() {
         canCurrentlyCollideWithBugNode = true
         movementEnabled = true
@@ -264,7 +286,9 @@ extension GameScene: BugPopupCorrectAnswerDelegate {
         dimPanel?.removeFromParent()
     }
     
+    // Updating the label to display the correct number of bugs the player has fixed
     func updateNumberOfBugsFixedLabel() {
+        bugsFixedLabel?.run(SKAction.sequence([SKAction.scale(by: 1.2, duration: 0.2), SKAction.scale(by: 0.8, duration: 0.2)]))
         bugsFixedLabel?.text = "\(numberOfBugsFixed)/6 bugs fixed"
     }
 }

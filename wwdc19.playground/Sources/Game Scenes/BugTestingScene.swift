@@ -16,7 +16,7 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func setupPlayer() {
-        thePlayer.setupPlayerNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 64, height: 192), position: CGPoint(x: -100.0, y: 0))
+        thePlayer.setupPlayerNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 64, height: 192), position: CGPoint(x: -800.0, y: -64))
         thePlayer.setupStateMachine()
         self.addChild(thePlayer)
     }

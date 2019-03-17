@@ -15,7 +15,7 @@ public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
     var audioPlayer: AVAudioPlayer?
     
     var scholarNodes: [ScholarNode] = [ScholarNode]()
-    var scholarNodeLocations: [CGPoint] = [CGPoint(x: 100.0, y: 100.0), CGPoint(x: 150.0, y: 100.0), CGPoint(x: 100.0, y: -170.0), CGPoint(x: 160.0, y: -170.0), CGPoint(x: 220.0, y: -170.0), CGPoint(x: 300.0, y: -170.0)]
+    var scholarNodeLocations: [CGPoint] = [CGPoint(x: 100.0, y: 100.0), CGPoint(x: 200.0, y: 100.0), CGPoint(x: 100.0, y: -170.0), CGPoint(x: 200.0, y: -170.0), CGPoint(x: 280.0, y: -170.0), CGPoint(x: 380.0, y: -170.0)]
     
     override public func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
@@ -43,7 +43,7 @@ public class ScholarsSelfieScene: SKScene, SKPhysicsContactDelegate {
     // Method which sets up all the scholar nodes
     func setupScholarNodes() {
         for scholarNodeLocation in scholarNodeLocations {
-            let scholarNode = ScholarNode(texture: SKTexture(imageNamed: "chicken"), size: CGSize(width: 100.0, height: 50.0))
+            let scholarNode = ScholarNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 50.0, height: 150.0))
             scholarNode.position = scholarNodeLocation
             scholarNodes.append(scholarNode)
             self.addChild(scholarNode)

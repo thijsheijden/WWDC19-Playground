@@ -22,16 +22,18 @@ public class IntroCutScene: SKScene {
     
     func setupLabel() {
         cutsceneLabel1 = self.childNode(withName: "cutsceneLabel") as? SKLabelNode
+        cutsceneLabel1?.fontName = "Minecraft"
+        cutsceneLabel1?.fontSize = 50.0
         cutsceneLabel1?.text? = ""
         cutsceneLabel1?.preferredMaxLayoutWidth = 300.0
         cutsceneLabel1?.typeOutText(text: GameVariables.firstCutSceneText) { () -> Void in
-            self.presentGameScene()
+            self.presentBugHuntingScene()
         }
     }
     
-    func presentGameScene() {
-        if let gameScene = GameScene(fileNamed: "GameScene") {
-            GameVariables.sceneView.presentScene(gameScene, transition: SKTransition.push(with: SKTransitionDirection.left, duration: 2.5))
+    func presentBugHuntingScene() {
+        if let bugHuntingScene = BugHuntingScene(fileNamed: "BugHuntingScene") {
+            GameVariables.sceneView.presentScene(bugHuntingScene, transition: SKTransition.push(with: SKTransitionDirection.left, duration: 2.5))
         }
     }
     

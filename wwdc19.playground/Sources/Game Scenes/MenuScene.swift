@@ -8,10 +8,12 @@ public class MenuScene: SKScene {
     override public func didMove(to view: SKView) {
         self.backgroundColor = SKColor.blue
         
+        registerPixelFont()
+        
         startButton = ButtonNode(texture: SKTexture(imageNamed: "start"), size: CGSize(width: 100, height: 100))
         startButton.position = CGPoint(x: 100.0, y: 100.0)
         startButton.action = { (button) in
-            if let scene = GameScene(fileNamed: "GameScene") {
+            if let scene = IntroCutScene(fileNamed: "IntroCutScene") {
                 // Set the scale mode to scale to fit the window
                 self.scene!.scaleMode = .aspectFill
                 
@@ -20,6 +22,12 @@ public class MenuScene: SKScene {
             }
         }
         self.addChild(startButton)
+    }
+    
+    // Method which registers the pixel font so other scenes can use it
+    func registerPixelFont() {
+        let font = Bundle.main.url(forResource: "Minecraft", withExtension: ".ttf") as! CFURL
+        CTFontManagerRegisterFontsForURL(font, CTFontManagerScope.process, nil)
     }
     
     @objc static override public var supportsSecureCoding: Bool {
