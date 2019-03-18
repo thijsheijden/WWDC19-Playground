@@ -17,9 +17,6 @@ class PlayerNode: SKSpriteNode {
     var horizontalMovementSpeed: CGFloat = 0.0
     var runMovementSpeed: CGFloat = 5.0
     
-    var verticalMovementSpeed: CGFloat = 0.0
-    var jumpSpeed: CGFloat = 10.0
-    
     func getMovementSpeed() {
         switch (left, right, jump) {
         case (true, false, false):
@@ -33,11 +30,11 @@ class PlayerNode: SKSpriteNode {
             stateMachine?.enter(RunningState.self)
             movePlayer()
         case (false, false, true):
-            jumpPlayer(horizontalMovement: horizontalMovementSpeed)
+            jumpPlayer()
         case (true, false, true):
-            jumpPlayer(horizontalMovement: horizontalMovementSpeed)
+            jumpPlayer()
         case (false, true, true):
-            jumpPlayer(horizontalMovement: horizontalMovementSpeed)
+            jumpPlayer()
         default:
             horizontalMovementSpeed = 0.0
             stateMachine?.enter(IdleState.self)
@@ -48,7 +45,7 @@ class PlayerNode: SKSpriteNode {
         self.position.x += horizontalMovementSpeed
     }
     
-    func jumpPlayer(horizontalMovement: CGFloat) {
+    func jumpPlayer() {
         if currentlyTouchingGround {
             self.physicsBody?.applyImpulse(CGVector(dx: horizontalMovementSpeed*5, dy: 200.0))
             currentlyTouchingGround = false

@@ -115,8 +115,8 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     
     // Setting up the node which displays in the bottom of the screen and just shows some text
     func setupTextLineNode() {
-        textLineNode = TextLineNode(texture: SKTexture(imageNamed: "platform-1"), size: CGSize(width: self.size.width - 200.0, height: 100.0))
-        textLineNode?.position = CGPoint(x: 0.0, y: -200)
+        textLineNode = TextLineNode(texture: SKTexture(imageNamed: "platform-1"), size: CGSize(width: 500.0, height: 100.0))
+        textLineNode?.position = CGPoint(x: 310.0, y: 125.0)
         textLineNode?.zPosition = 100
         self.cameraNode?.addChild(textLineNode!)
         textLineNode?.startTypingText(text: GameVariables.gameSceneText)
@@ -170,28 +170,6 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         get {
             return true
         }
-    }
-    
-    func touchDown(atPoint pos : CGPoint) {
-
-        
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-
-    }
-    
-    override public func mouseDown(with event: NSEvent) {
-    }
-    
-    override public func mouseDragged(with event: NSEvent) {
-    }
-    
-    override public func mouseUp(with event: NSEvent) {
     }
     
     // Method which gets called every 1/60th of a second to update for the next frame
