@@ -9,10 +9,15 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     var dimPanel: SKSpriteNode?
     var bugsFixedLabel: SKLabelNode?
     var textLineNode: TextLineNode?
+    var zoomOutButton: ButtonNode?
     
     var movementEnabled: Bool = true
     
     var numberOfBugsFixed: Int = 0
+    var capturedBugNode: BugNode?
+    
+    var zoomedOut: Bool = false
+    var canPressZoomButton: Bool = true
     
     var bugNodeLocations: [CGPoint] = [CGPoint(x: 883, y: 229), CGPoint(x: 37, y: 308), CGPoint(x: 1970, y: 730)]
     var bugNodes = [BugNode]()
@@ -39,6 +44,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         setupAndAddNextLevelDoorNode()
         setupJumpPads()
         setupTextLineNode()
+        setupAndAddZoomOutButton()
         
         self.view?.showsFPS = true
         self.view?.showsNodeCount = true
@@ -114,6 +120,48 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         textLineNode?.zPosition = 100
         self.cameraNode?.addChild(textLineNode!)
         textLineNode?.startTypingText(text: GameVariables.gameSceneText)
+    }
+    
+    // MARK: Camera zoom button and functionality
+    // Setting up the zoom out button and adding it to the bottom right of the camera node frame
+    func setupAndAddZoomOutButton() {
+        zoomOutButton = ButtonNode(texture: SKTexture(imageNamed: "chicken"), size: CGSize(width: 100.0, height: 100.0))
+        zoomOutButton?.position = CGPoint(x: 250.0, y: -250.0)
+        
+        // Setting the action for when the user taps the button depending on the zoom state of the level
+        zoomOutButton?.action = { (button) in
+            switch (self.zoomedOut, self.canPressZoomButton) {
+            case (true, true):
+                self.zoomInCamera() { () -> Void in }
+            case (false, true):
+                self.zoomOutCamera()
+            default:
+                print("")
+            }
+        }
+        
+        self.cameraNode?.addChild(zoomOutButton!)
+    }
+    
+    // Zoom out the camera functionality
+    func zoomOutCamera() {
+        canPressZoomButton = false
+        cameraNode?.run(SKAction.scale(to: 1.5, duration: 1.0)) { () -> Void in
+            GameVariables.zoomMultiplication = 1.5
+            self.zoomedOut = true
+            self.canPressZoomButton = true
+        }
+    }
+    
+    // Zoom in the camera functionality
+    func zoomInCamera(completion: @escaping () -> Void) {
+        canPressZoomButton = false
+        cameraNode?.run(SKAction.scale(to: 1.0, duration: 1.0)) { () -> Void in
+            GameVariables.zoomMultiplication = 1.0
+            self.zoomedOut = false
+            self.canPressZoomButton = true
+            completion()
+        }
     }
     
     @objc static override public var supportsSecureCoding: Bool {
@@ -241,19 +289,31 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
                     developerNode.isBusy = true
                     if let bugNode = contact.bodyA.node as? BugNode {
                         bugNode.removeFromParent()
-                        let popup = bugNode.createPopupNode()
-                        let centerFramePosition = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
-                        popup.position = centerFramePosition
-                        popup.delegate = self
-                        addDimPanelBehindPopup()
-                        popup.run(SKAction.fadeIn(withDuration: 1.0))
-                        self.addChild(popup)
+                        
+                        // Check wether zoomed in, if so zoom out
+                        if zoomedOut {
+                            self.zoomInCamera() { () -> Void in
+                                self.addBugNodePopup(bugNode: bugNode)
+                            }
+                        } else {
+                            addBugNodePopup(bugNode: bugNode)
+                        }
                     }
                 } else {
                     print("Sorry this developer is busy")
                 }
             }
         }
+    }
+    
+    func addBugNodePopup(bugNode: BugNode) {
+        let popup = bugNode.createPopupNode()
+        let centerFramePosition = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
+        popup.position = centerFramePosition
+        popup.delegate = self
+        addDimPanelBehindPopup()
+        popup.run(SKAction.fadeIn(withDuration: 1.0))
+        self.addChild(popup)
     }
     
     // Method which calculates wether the player touched the top of the platform or not
@@ -266,13 +326,10 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         dimPanel = SKSpriteNode(color: NSColor.black, size: self.size)
         dimPanel!.alpha = 0.0
         dimPanel!.zPosition = 100
-        dimPanel!.position = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
+        dimPanel!.position = (self.cameraNode?.position)!
         dimPanel!.run(SKAction.fadeAlpha(to: 0.75, duration: 1.0))
         self.addChild(dimPanel!)
     }
-    
-    // TODO: add a button to all the scenes which zooms the scene out so the player can see more of the level, clicking the button again zooms back in
-    
 }
 
 // Conforming to the delegate for the bug popup so we know when a user has selected the correct answer

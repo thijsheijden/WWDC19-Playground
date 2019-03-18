@@ -30,4 +30,7 @@ public class GameVariables {
     public static let correctAnswer = [[true, false, false], [false, false, true], [false, false, true]]
     public static let bugImage = ["apple", "banana", "kiwi"]
     
+    // Variable that keeps track of the zoom level multiplication for dragging items, if zoomed out, more x or y needs to be added to the dragged nodes
+    public static var zoomMultiplication: CGFloat = 1.0
+    
 }

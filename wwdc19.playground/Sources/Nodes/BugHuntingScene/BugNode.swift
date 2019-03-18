@@ -49,8 +49,8 @@ class BugNode: SKSpriteNode {
         let deltaX = event.deltaX
         let deltaY = event.deltaY
         
-        self.position.x += deltaX
-        self.position.y -= deltaY
+        self.position.x += deltaX * GameVariables.zoomMultiplication
+        self.position.y -= deltaY * GameVariables.zoomMultiplication
     }
     
     override func mouseUp(with event: NSEvent) {

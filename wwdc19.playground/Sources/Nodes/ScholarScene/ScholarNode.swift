@@ -60,8 +60,8 @@ class ScholarNode: SKSpriteNode {
         let deltaX = event.deltaX
         let deltaY = event.deltaY
         
-        self.position.x += deltaX * 1.5
-        self.position.y -= deltaY * 1.5
+        self.position.x += deltaX * GameVariables.zoomMultiplication
+        self.position.y -= deltaY * GameVariables.zoomMultiplication
     }
     
     override func mouseUp(with event: NSEvent) {
