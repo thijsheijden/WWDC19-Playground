@@ -1,5 +1,6 @@
 import PlaygroundSupport
 import SpriteKit
+import AVFoundation
 
 public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
 
@@ -10,6 +11,10 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     var bugsFixedLabel: SKLabelNode?
     var textLineNode: TextLineNode?
     var zoomOutButton: ButtonNode?
+    var selfiePanel: SKSpriteNode?
+    var timerNode: TimerNode?
+    
+    var audioPlayer: AVAudioPlayer?
     
     var movementEnabled: Bool = true
     
@@ -22,11 +27,16 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     var bugNodeLocations: [CGPoint] = [CGPoint(x: 883, y: 229), CGPoint(x: 37, y: 308), CGPoint(x: 1970, y: 730)]
     var bugNodes = [BugNode]()
     
-    var developerNodesLocations: [CGPoint] = [CGPoint(x: 100, y: -150.0), CGPoint(x: 995, y: 520), CGPoint(x: 2890, y: 420)]
+    var developerNodesLocations: [CGPoint] = [CGPoint(x: 900, y: 260.0), CGPoint(x: 1090.0, y: 603), CGPoint(x: 2800, y: 450)]
     
-    var jumpPadNodeLocations: [CGPoint] = [CGPoint(x: -670.0, y: -125.0), CGPoint(x: 2190.0, y: -125.0)]
+    var jumpPadNodeLocations: [CGPoint] = [CGPoint(x: -670.0, y: -100.0), CGPoint(x: 2190.0, y: -125.0)]
     
     var canCurrentlyCollideWithBugNode: Bool = true
+    
+    var scholarNodes: [ScholarNode] = [ScholarNode]()
+    var scholarNodeLocations: [CGPoint] = [CGPoint(x: 280.0, y: -170.0), CGPoint(x: 380.0, y: -170.0)]
+    
+    var canTakeSelfie: Bool = true
     
     // Moved to this scene
     override public func didMove(to view: SKView) {
@@ -45,6 +55,8 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         setupJumpPads()
         setupTextLineNode()
         setupAndAddZoomOutButton()
+        setupScholarNodes()
+        setupAndAddTimerNode()
         
         self.view?.showsFPS = true
         self.view?.showsNodeCount = true
@@ -88,6 +100,23 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         self.cameraNode?.addChild(bugsFixedLabel!)
     }
     
+    // Method which sets up all the scholar nodes
+    func setupScholarNodes() {
+        for scholarNodeLocation in scholarNodeLocations {
+            let scholarNode = ScholarNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 50.0, height: 150.0))
+            scholarNode.position = scholarNodeLocation
+            scholarNodes.append(scholarNode)
+            self.addChild(scholarNode)
+        }
+    }
+    
+    // Method which loops through all the scholar nodes and updates their positions, based on the players location
+    func updateScholarNodeLocations() {
+        for scholar in scholarNodes {
+            scholar.checkWhereTimIs(timPosition: thePlayer.position)
+        }
+    }
+    
     // Setting up and adding the door which takes the player to the next level
     func setupAndAddNextLevelDoorNode() {
         let nextLevelDoorNode = DoorNode(texture: SKTexture(imageNamed: "apple"), size: CGSize(width: 100.0, height: 100.0))
@@ -98,7 +127,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     // Setting up and adding the developer nodes to the scene at set locations
     func setupAndAddDeveloperNode() {
         for developerNodeLocation in developerNodesLocations {
-            let developerNode = DeveloperNode(texture: SKTexture(imageNamed: "laptop"), size: CGSize(width: 100.0, height: 70.0))
+            let developerNode = DeveloperNode(texture: SKTexture(imageNamed: "developer-idle"), size: CGSize(width: 256.0, height: 256.0))
             developerNode.position = developerNodeLocation
             self.addChild(developerNode)
         }
@@ -107,7 +136,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     // Setting up the jumppad nodes and adding them to the scene
     func setupJumpPads() {
         for position in jumpPadNodeLocations {
-            let jumpPad = JumpPadNode(texture: SKTexture(imageNamed: "chicken"), size: CGSize(width: 100.0, height: 50.0))
+            let jumpPad = JumpPadNode(texture: SKTexture(imageNamed: "jumppad-idle"), size: CGSize(width: 128.0, height: 128.0))
             jumpPad.position = position
             self.addChild(jumpPad)
         }
@@ -119,7 +148,9 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         textLineNode?.position = CGPoint(x: 310.0, y: 125.0)
         textLineNode?.zPosition = 100
         self.cameraNode?.addChild(textLineNode!)
-        textLineNode?.startTypingText(text: GameVariables.gameSceneText)
+        textLineNode?.startTypingText(text: GameVariables.gameSceneText) { () -> Void in
+            self.timerNode?.startTimer()
+        }
     }
     
     // MARK: Camera zoom button and functionality
@@ -164,6 +195,14 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // Setting up and adding the timer to the camera frame
+    func setupAndAddTimerNode() {
+        timerNode = TimerNode(texture: SKTexture(imageNamed: "timer1"), size: CGSize(width: 100.0, height: 100.0))
+        timerNode?.position = CGPoint(x: -500.0, y: 150.0)
+        timerNode?.zPosition = 99
+        self.cameraNode?.addChild(timerNode!)
+    }
+    
     @objc static override public var supportsSecureCoding: Bool {
         // SKNode conforms to NSSecureCoding, so any subclass going
         // through the decoding process must support secure coding
@@ -178,6 +217,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
             thePlayer.getMovementSpeed()
             updateCameraPosition()
             updateBugPositions()
+            updateScholarNodeLocations()
         }
     }
     
@@ -250,7 +290,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         // Colision between player and next level door
         if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.nextLevelDoor.rawValue {
             print((bugsFixedLabel?.text)!)
-            if (bugsFixedLabel?.text)! == "3/6 bugs fixed" {
+            if numberOfBugsFixed == 3 {
                 if let nextScene = BugTestingScene(fileNamed: "BugTestingScene") {
                     GameVariables.sceneView.presentScene(nextScene, transition: SKTransition.push(with: SKTransitionDirection.left, duration: 2.5))
                 }
@@ -264,7 +304,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
                 if !developerNode.isBusy {
                     canCurrentlyCollideWithBugNode = false
                     movementEnabled = false
-                    developerNode.isBusy = true
+                    developerNode.setDeveloperToBusy()
                     if let bugNode = contact.bodyA.node as? BugNode {
                         bugNode.removeFromParent()
                         
@@ -280,6 +320,23 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
                 } else {
                     print("Sorry this developer is busy")
                 }
+            }
+        }
+        
+        // Detecting collision between scholar node and player node
+        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.scholar.rawValue {
+            if canTakeSelfie {
+                canTakeSelfie = false
+                movementEnabled = false
+                contact.bodyB.node?.removeFromParent()
+                takeSelfie()
+            }
+        }
+        
+        // Detecting collision between a scholar and a platform
+        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.platform.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.scholar.rawValue {
+            if let scholarNode = contact.bodyB.node as? ScholarNode {
+                scholarNode.setMovementBoundaries(minX: (contact.bodyA.node?.frame.minX)!, maxX: (contact.bodyA.node?.frame.maxX)!)
             }
         }
     }
@@ -307,6 +364,28 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         dimPanel!.position = (self.cameraNode?.position)!
         dimPanel!.run(SKAction.fadeAlpha(to: 0.75, duration: 1.0))
         self.addChild(dimPanel!)
+    }
+    
+    // Method which imitates taking a selfie, by making the screen bright white and playing the camera shutter sound
+    func takeSelfie() {
+        selfiePanel = SKSpriteNode(color: NSColor.white, size: CGSize(width: self.size.width + 1500, height: self.size.height + 1500))
+        selfiePanel!.alpha = 0.0
+        selfiePanel!.zPosition = 100
+        selfiePanel!.position = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
+        self.addChild(selfiePanel!)
+        selfiePanel!.run(SKAction.sequence([SKAction.fadeAlpha(to: 1.0, duration: 0.4), SKAction.fadeAlpha(to: 0.0, duration: 0.6)])) { () -> Void in
+            self.movementEnabled = true
+            self.removeFromParent()
+            self.canTakeSelfie = true
+        }
+        do {
+            let cameraSoundEffect = URL(fileURLWithPath: Bundle.main.path(forResource: "cameraSoundEffect", ofType: "mp3")!)
+            audioPlayer = try AVAudioPlayer(contentsOf: cameraSoundEffect)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
 }
 

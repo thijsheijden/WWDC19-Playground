@@ -3,29 +3,42 @@ import SpriteKit
 
 public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     
+    // Global Nodes
     var cameraNode: SKCameraNode?
     var thePlayer: PlayerNode = PlayerNode()
     var drawingCanvas: NSView?
     
+    // Did move to this scene event
     override public func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
         
         cameraNode = SKCameraNode()
         setupCamera()
         setupPlayer()
+        setupAndAddCanvasView()
     }
     
+    // Setting up the player node
     func setupPlayer() {
         thePlayer.setupPlayerNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 64, height: 192), position: CGPoint(x: -800.0, y: -64))
         thePlayer.setupStateMachine()
         self.addChild(thePlayer)
     }
     
+    // Setting up the camera node
     func setupCamera() {
         self.addChild(cameraNode!)
         camera = cameraNode
     }
     
+    // Adding an NSView which will be used as a drawing canvas
+    func setupAndAddCanvasView() {
+        let canvas = NSView(frame: NSRect(x: 0.0, y: 0.0, width: 250.0, height: 250.0))
+        canvas.layer?.backgroundColor = CGColor.black
+        self.view?.addSubview(canvas, positioned: .above, relativeTo: nil)
+    }
+    
+    // Called before every frame update
     override public func update(_ currentTime: TimeInterval) {
         thePlayer.getMovementSpeed()
         updateCameraPosition()

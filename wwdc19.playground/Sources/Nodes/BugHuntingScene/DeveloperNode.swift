@@ -4,6 +4,8 @@ class DeveloperNode: SKSpriteNode {
     
     var isBusy: Bool = false
     
+    var workingAnimationFrames: [SKTexture] = [SKTexture(imageNamed: "developer2"), SKTexture(imageNamed: "developer3"), SKTexture(imageNamed: "developer4"), SKTexture(imageNamed: "developer5"), SKTexture(imageNamed: "developer6"), SKTexture(imageNamed: "developer7"), SKTexture(imageNamed: "developer8"), SKTexture(imageNamed: "developer9"), SKTexture(imageNamed: "developer10"), SKTexture(imageNamed: "developer11"), SKTexture(imageNamed: "developer12"), SKTexture(imageNamed: "developer13"), ]
+    
     required init(coder: NSCoder) {
         fatalError("NSCoding not supported")
     }
@@ -24,7 +26,7 @@ class DeveloperNode: SKSpriteNode {
     // Method which makes this developer busy, meaning he cant be used for bug fixing anymore
     func setDeveloperToBusy() {
         isBusy = true
-        // Change texture to busy texture, and developer gameState to busy
+        self.run(SKAction.repeatForever(SKAction.animate(with: workingAnimationFrames, timePerFrame: 0.1)))
     }
     
 }

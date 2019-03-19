@@ -22,6 +22,7 @@ class BugPopupAnswerButtonNode: SKSpriteNode {
     
     func setupLabel() {
         let label = SKLabelNode(text: answer)
+        label.fontName = "Minecraft"
         label.fontColor = NSColor.black
         label.fontSize = 16.0
         label.position = CGPoint(x: self.frame.width / 2, y: self.frame.height / 2)

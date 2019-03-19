@@ -1,8 +1,16 @@
 import SpriteKit
+import AVFoundation
 
 class JumpPadNode: SKSpriteNode {
     
     var active: Bool = true
+    
+    var activatedTextures: [SKTexture] = [SKTexture(imageNamed: "jumppad1"), SKTexture(imageNamed: "jumppad2"), SKTexture(imageNamed: "jumppad-idle")]
+    
+    let idleTexture = SKTexture(imageNamed: "jumppad-idle")
+    
+    // The sound effect audio player
+    var audioPlayer: AVAudioPlayer?
     
     init(texture: SKTexture, size: CGSize) {
         super.init(texture: texture, color: NSColor.white, size: size)
@@ -25,10 +33,25 @@ class JumpPadNode: SKSpriteNode {
     
     func activated() {
         active = false
-        // Run activated animation
-        // Go back to default animation
-        // Put back to active
+        runJumpAnimation()
     }
     
+    func runJumpAnimation() {
+        playSound()
+        self.run(SKAction.animate(with: activatedTextures, timePerFrame: 0.05)) { () -> Void in
+            self.active = true
+        }
+    }
+    
+    func playSound() {
+        do {
+            let cameraSoundEffect = URL(fileURLWithPath: Bundle.main.path(forResource: "boingSound", ofType: "mp3")!)
+            audioPlayer = try AVAudioPlayer(contentsOf: cameraSoundEffect)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
 }
 

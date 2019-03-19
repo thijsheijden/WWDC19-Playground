@@ -24,9 +24,10 @@ class TextLineNode: SKSpriteNode {
         self.addChild(textLineNodeLabel!)
     }
     
-    func startTypingText(text: String) {
+    func startTypingText(text: String, completion: @escaping () -> Void) {
         textLineNodeLabel?.typeOutText(text: text) { () -> Void in
             self.removeSelf()
+            completion()
         }
     }
     
