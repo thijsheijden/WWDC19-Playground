@@ -33,15 +33,13 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     
     // Adding an NSView which will be used as a drawing canvas
     func setupAndAddCanvasView() {
-        let canvas = NSView(frame: NSRect(x: 0.0, y: 0.0, width: 250.0, height: 250.0))
-        canvas.layer?.backgroundColor = CGColor.black
-        self.view?.addSubview(canvas, positioned: .above, relativeTo: nil)
+        let canvas = CanvasView(frame: NSRect(x: (self.view?.frame.midX)! - 250, y: (self.view?.frame.midY)! - 140, width: 450.0, height: 450.0))
+        self.view?.addSubview(canvas)
     }
     
     // Called before every frame update
     override public func update(_ currentTime: TimeInterval) {
         thePlayer.getMovementSpeed()
-        updateCameraPosition()
     }
     
     func updateCameraPosition() {

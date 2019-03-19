@@ -24,10 +24,10 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     var zoomedOut: Bool = false
     var canPressZoomButton: Bool = true
     
-    var bugNodeLocations: [CGPoint] = [CGPoint(x: 883, y: 229), CGPoint(x: 37, y: 308), CGPoint(x: 1970, y: 730)]
+    var bugNodeLocations: [CGPoint] = [CGPoint(x: 2960, y: 960), CGPoint(x: 37, y: 308), CGPoint(x: 1970, y: 730)]
     var bugNodes = [BugNode]()
     
-    var developerNodesLocations: [CGPoint] = [CGPoint(x: 900, y: 260.0), CGPoint(x: 1090.0, y: 603), CGPoint(x: 2800, y: 450)]
+    var developerNodesLocations: [CGPoint] = [CGPoint(x: 900, y: 285.0), CGPoint(x: 1090.0, y: 628), CGPoint(x: 2800, y: 475)]
     
     var jumpPadNodeLocations: [CGPoint] = [CGPoint(x: -670.0, y: -100.0), CGPoint(x: 2190.0, y: -125.0)]
     
@@ -127,7 +127,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     // Setting up and adding the developer nodes to the scene at set locations
     func setupAndAddDeveloperNode() {
         for developerNodeLocation in developerNodesLocations {
-            let developerNode = DeveloperNode(texture: SKTexture(imageNamed: "developer-idle"), size: CGSize(width: 256.0, height: 256.0))
+            let developerNode = DeveloperNode(texture: SKTexture(imageNamed: "developer-idle"), size: CGSize(width: 300.0, height: 300.0))
             developerNode.position = developerNodeLocation
             self.addChild(developerNode)
         }
@@ -144,8 +144,8 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     
     // Setting up the node which displays in the bottom of the screen and just shows some text
     func setupTextLineNode() {
-        textLineNode = TextLineNode(texture: SKTexture(imageNamed: "platform-1"), size: CGSize(width: 500.0, height: 100.0))
-        textLineNode?.position = CGPoint(x: 310.0, y: 125.0)
+        textLineNode = TextLineNode(texture: SKTexture(imageNamed: "text-bubble"), size: CGSize(width: 500, height: 178))
+        textLineNode?.position = CGPoint(x: 220.0, y: 200.0)
         textLineNode?.zPosition = 100
         self.cameraNode?.addChild(textLineNode!)
         textLineNode?.startTypingText(text: GameVariables.gameSceneText) { () -> Void in
@@ -156,8 +156,9 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     // MARK: Camera zoom button and functionality
     // Setting up the zoom out button and adding it to the bottom right of the camera node frame
     func setupAndAddZoomOutButton() {
-        zoomOutButton = ButtonNode(texture: SKTexture(imageNamed: "chicken"), size: CGSize(width: 100.0, height: 100.0))
-        zoomOutButton?.position = CGPoint(x: 250.0, y: -250.0)
+        zoomOutButton = ButtonNode(texture: SKTexture(imageNamed: "zoom-camera-out"), size: CGSize(width: 100.0, height: 100.0))
+        zoomOutButton?.position = CGPoint(x: 525.0, y: -225.0)
+        zoomOutButton?.zPosition = 99
         
         // Setting the action for when the user taps the button depending on the zoom state of the level
         zoomOutButton?.action = { (button) in
@@ -177,6 +178,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     // Zoom out the camera functionality
     func zoomOutCamera() {
         canPressZoomButton = false
+        zoomOutButton?.texture = SKTexture(imageNamed: "zoom-camera-in")
         cameraNode?.run(SKAction.scale(to: 1.5, duration: 1.0)) { () -> Void in
             GameVariables.zoomMultiplication = 1.5
             self.zoomedOut = true
@@ -187,6 +189,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     // Zoom in the camera functionality
     func zoomInCamera(completion: @escaping () -> Void) {
         canPressZoomButton = false
+        zoomOutButton?.texture = SKTexture(imageNamed: "zoom-camera-out")
         cameraNode?.run(SKAction.scale(to: 1.0, duration: 1.0)) { () -> Void in
             GameVariables.zoomMultiplication = 1.0
             self.zoomedOut = false
@@ -198,7 +201,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     // Setting up and adding the timer to the camera frame
     func setupAndAddTimerNode() {
         timerNode = TimerNode(texture: SKTexture(imageNamed: "timer1"), size: CGSize(width: 100.0, height: 100.0))
-        timerNode?.position = CGPoint(x: -500.0, y: 150.0)
+        timerNode?.position = CGPoint(x: -500.0, y: 175.0)
         timerNode?.zPosition = 99
         self.cameraNode?.addChild(timerNode!)
     }
@@ -358,7 +361,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     
     // Method which adds a dark background behind the popup.
     func addDimPanelBehindPopup() {
-        dimPanel = SKSpriteNode(color: NSColor.black, size: self.size)
+        dimPanel = SKSpriteNode(color: NSColor.black, size: CGSize(width: self.size.width * 1.5, height: self.size.height * 1.5))
         dimPanel!.alpha = 0.0
         dimPanel!.zPosition = 100
         dimPanel!.position = (self.cameraNode?.position)!
@@ -403,7 +406,7 @@ extension BugHuntingScene: BugPopupCorrectAnswerDelegate {
     // Updating the label to display the correct number of bugs the player has fixed
     func updateNumberOfBugsFixedLabel() {
         bugsFixedLabel?.run(SKAction.sequence([SKAction.scale(by: 1.2, duration: 0.2), SKAction.scale(by: 0.8, duration: 0.2)]))
-        bugsFixedLabel?.text = "\(numberOfBugsFixed)/6 bugs fixed"
+        bugsFixedLabel?.text = "\(numberOfBugsFixed)/3 bugs fixed"
     }
 }
 

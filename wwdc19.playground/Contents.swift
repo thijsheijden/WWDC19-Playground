@@ -2,8 +2,8 @@ import PlaygroundSupport
 import SpriteKit
 
 // Loading the menu scene
-let scene = BugHuntingScene(fileNamed: "BugHuntingScene")
-//let scene = MenuScene(size: GameVariables.sceneView.frame.size)
+//let scene = BugHuntingScene(fileNamed: "BugHuntingScene")
+let scene = MenuScene(size: GameVariables.sceneView.frame.size)
 GameVariables.sceneView.presentScene(scene)
 
 // Initializing the menu scene when the playground starts

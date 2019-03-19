@@ -11,7 +11,7 @@ public class GameVariables {
     // All the cutscene text lines
     public static let firstCutSceneText = "//////////Hey there!//////{It's 7:00 AM, the morning of the keynote.//////{Before the keynote there are just{3 things I need to do.//////{1. Fix the coreML bugs.//////{2. Test if the bugs are fixed.//////{3. Catch Mr. Clicker...//////{So lets get to work!"
     
-    public static let gameSceneText = "//////////Move around using 'a', 'd' and 'spacebar'.//////{To fix a bug, drag it to a developer.//////{Watch out for scholars!{They really want selfies!!"
+    public static let gameSceneText = "//////////Move around using 'a', 'd'{and use 'spacebar' to jump.//////{To fix a bug, drag it to a developer.//////{Watch out for scholars!{They really want selfies!!//////{You only have 60 seconds to{fix all the bugs.//////{Good luck!!"
     
     public static var playerPointingDirection = "right"
     

@@ -33,7 +33,7 @@ public class IntroCutScene: SKScene {
     
     func presentBugHuntingScene() {
         if let bugHuntingScene = BugHuntingScene(fileNamed: "BugHuntingScene") {
-            GameVariables.sceneView.presentScene(bugHuntingScene, transition: SKTransition.push(with: SKTransitionDirection.left, duration: 2.5))
+            GameVariables.sceneView.presentScene(bugHuntingScene, transition: SKTransition.reveal(with: .left, duration: 1.0))
         }
     }
     

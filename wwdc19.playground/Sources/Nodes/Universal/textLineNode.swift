@@ -17,7 +17,7 @@ class TextLineNode: SKSpriteNode {
         textLineNodeLabel = SKLabelNode(text: "")
         textLineNodeLabel?.fontName = "Minecraft"
         textLineNodeLabel?.fontSize = 25.0
-        textLineNodeLabel?.position = CGPoint(x: self.frame.minX + 25, y: self.frame.maxY - 50)
+        textLineNodeLabel?.position = CGPoint(x: self.frame.minX + 25, y: self.frame.maxY - 60)
         textLineNodeLabel?.verticalAlignmentMode = .center
         textLineNodeLabel?.horizontalAlignmentMode = .left
         textLineNodeLabel?.fontColor = NSColor.black
