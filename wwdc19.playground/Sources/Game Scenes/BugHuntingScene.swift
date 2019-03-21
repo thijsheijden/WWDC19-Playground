@@ -16,7 +16,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     
     var audioPlayer: AVAudioPlayer?
     
-    var movementEnabled: Bool = true
+    var movementEnabled: Bool = false
     
     var numberOfBugsFixed: Int = 0
     var capturedBugNode: BugNode?
@@ -29,12 +29,12 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     
     var developerNodesLocations: [CGPoint] = [CGPoint(x: 900, y: 285.0), CGPoint(x: 1090.0, y: 628), CGPoint(x: 2800, y: 475)]
     
-    var jumpPadNodeLocations: [CGPoint] = [CGPoint(x: -670.0, y: -100.0), CGPoint(x: 2190.0, y: -125.0)]
+    var jumpPadNodeLocations: [CGPoint] = [CGPoint(x: -670.0, y: -125.0), CGPoint(x: 2190.0, y: -125.0), CGPoint(x: 2480, y: 353)]
     
     var canCurrentlyCollideWithBugNode: Bool = true
     
     var scholarNodes: [ScholarNode] = [ScholarNode]()
-    var scholarNodeLocations: [CGPoint] = [CGPoint(x: 280.0, y: -170.0), CGPoint(x: 380.0, y: -170.0)]
+    var scholarNodeLocations: [CGPoint] = [CGPoint(x: 280.0, y: -170.0), CGPoint(x: 1545, y: 715), CGPoint(x: 2400, y: -85), CGPoint(x: 3015, y: 400)]
     
     var canTakeSelfie: Bool = true
     
@@ -53,10 +53,12 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         setupAndAddBugsFixedLabel()
         setupAndAddNextLevelDoorNode()
         setupJumpPads()
-        setupTextLineNode()
         setupAndAddZoomOutButton()
         setupScholarNodes()
         setupAndAddTimerNode()
+        runTinyTutorial { () -> Void in
+            self.movementEnabled = true
+        }
         
         self.view?.showsFPS = true
         self.view?.showsNodeCount = true
@@ -71,9 +73,36 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         setupCamera()
     }
     
+    // Method which runs the short tutorial at the start of the game.
+    func runTinyTutorial(completion: @escaping () -> Void) {
+        let introTextBubble = TextLineNode(texture: SKTexture(imageNamed: "tutorial-bubble"), size: CGSize(width: 1000.0, height: 150.0))
+        introTextBubble.position = CGPoint(x: 0.0, y: -270.0)
+        introTextBubble.textLineNodeLabel?.fontSize = 60.0
+        self.addChild(introTextBubble)
+        introTextBubble.startTypingText(text: GameVariables.gameSceneText, timeBetweenChars: 0.08, removeOnCompletion: true) { () -> Void in
+            self.timerNode?.startTimer()
+            completion()
+        }
+        moveBugToDeveloperTutorial()
+    }
+    
+    // Moving a bug to a developer for the tutorial
+    func moveBugToDeveloperTutorial() {
+        let bug = BugNode(texture: SKTexture(imageNamed: "bug-1"), size: CGSize(width: 100, height: 100), bugData: BugDataStruct(imageName: GameVariables.bugImage[0], answerLabels: GameVariables.imageLabels[0], correctAnswer: GameVariables.correctAnswer[0]))
+        bug.position = CGPoint(x: 110, y: -50)
+        bug.isHidden = true
+        bug.isUserInteractionEnabled = false
+        bug.physicsBody = nil
+        self.addChild(bug)
+        bug.run(SKAction.sequence([SKAction.changeCharge(by: 0.0, duration: 4.5), SKAction.unhide(), SKAction.move(to: CGPoint(x: 500, y: 28), duration: 1.5), SKAction.move(to: CGPoint(x: 530, y: 235), duration: 1.5), SKAction.move(to: CGPoint(x: 750, y: 210), duration: 1.5)])) { () -> Void in
+                bug.removeFromParent()
+        }
+    }
+    
     // Setting up the camera
     func setupCamera() {
         camera = cameraNode
+        cameraNode?.setScale(1.5)
     }
     
     // Setting up all the bugnodes with their corresponding locations in the scene
@@ -97,6 +126,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         bugsFixedLabel?.fontName = "Minecraft"
         bugsFixedLabel?.fontSize = 20.0
         bugsFixedLabel?.position = CGPoint(x: -500, y: 250)
+        bugsFixedLabel?.zPosition = 99
         self.cameraNode?.addChild(bugsFixedLabel!)
     }
     
@@ -142,17 +172,6 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    // Setting up the node which displays in the bottom of the screen and just shows some text
-    func setupTextLineNode() {
-        textLineNode = TextLineNode(texture: SKTexture(imageNamed: "text-bubble"), size: CGSize(width: 500, height: 178))
-        textLineNode?.position = CGPoint(x: 220.0, y: 200.0)
-        textLineNode?.zPosition = 100
-        self.cameraNode?.addChild(textLineNode!)
-        textLineNode?.startTypingText(text: GameVariables.gameSceneText, timeBetweenChars: 0.1, removeOnCompletion: true) { () -> Void in
-            self.timerNode?.startTimer()
-        }
-    }
-    
     // MARK: Camera zoom button and functionality
     // Setting up the zoom out button and adding it to the bottom right of the camera node frame
     func setupAndAddZoomOutButton() {
@@ -179,8 +198,8 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     func zoomOutCamera() {
         canPressZoomButton = false
         zoomOutButton?.texture = SKTexture(imageNamed: "zoom-camera-in")
-        cameraNode?.run(SKAction.scale(to: 1.5, duration: 1.0)) { () -> Void in
-            GameVariables.zoomMultiplication = 1.5
+        cameraNode?.run(SKAction.scale(to: 2.0, duration: 1.0)) { () -> Void in
+            GameVariables.zoomMultiplication = 2.0
             self.zoomedOut = true
             self.canPressZoomButton = true
         }
@@ -190,8 +209,8 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     func zoomInCamera(completion: @escaping () -> Void) {
         canPressZoomButton = false
         zoomOutButton?.texture = SKTexture(imageNamed: "zoom-camera-out")
-        cameraNode?.run(SKAction.scale(to: 1.0, duration: 1.0)) { () -> Void in
-            GameVariables.zoomMultiplication = 1.0
+        cameraNode?.run(SKAction.scale(to: 1.5, duration: 1.0)) { () -> Void in
+            GameVariables.zoomMultiplication = 1.5
             self.zoomedOut = false
             self.canPressZoomButton = true
             completion()

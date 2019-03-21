@@ -149,9 +149,8 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     
     //Functiont that initializes the recognition process and is called every second
     func recognize() {
-        // The model takes input with 12 by 120 pixels, here we take a snapshot of the drawview and resize is before feeding it into our neural net.
         
-        let image = drawingCanvas?.snapshot.cgImage.resize()
+        let image = drawingCanvas?.snapshot.cgImage
         
         let imageRequest = VNImageRequestHandler(cgImage: image!, options: [:])
         do {

@@ -26,7 +26,7 @@ public class MenuScene: SKScene {
     
     // Method which registers the pixel font so other scenes can use it
     func registerPixelFont() {
-        let font = Bundle.main.url(forResource: "Minecraft", withExtension: ".ttf") as! CFURL
+        let font = Bundle.main.url(forResource: "Minecraft", withExtension: ".ttf")! as CFURL
         CTFontManagerRegisterFontsForURL(font, CTFontManagerScope.process, nil)
     }
     

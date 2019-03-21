@@ -10,7 +10,7 @@ class BugPopupNode: SKSpriteNode {
     
     var bugData: BugDataStruct?
     
-    var answerButtonLocations: [CGPoint]?
+    var answerButtonLocations = [CGPoint]()
     
     let fadeInAction = SKAction.sequence([SKAction.wait(forDuration: 1.0), SKAction.fadeIn(withDuration: 1.0)])
     
@@ -24,14 +24,17 @@ class BugPopupNode: SKSpriteNode {
         self.zPosition = 101
         self.bugData = bugData
         isUserInteractionEnabled = true
-        answerButtonLocations = [CGPoint(x: self.frame.minX + 50, y: self.frame.minY + 50), CGPoint(x: self.frame.minX + 200, y: self.frame.minY + 50), CGPoint(x: self.frame.minX + 350, y: self.frame.minY + 50)]
+        let minX = self.frame.minX
+        let maxX = self.frame.maxX
+        let minY = self.frame.minY
+        answerButtonLocations = [CGPoint(x: minX + 100.0, y: minY + 100.0), CGPoint(x: self.frame.midX - 50.0, y: minY + 100.0), CGPoint(x: maxX - 200.0, y: minY + 100.0)]
         addPopupImage()
         addOptionButtons()
     }
     
     func addPopupImage() {
         let imageNode = SKSpriteNode(imageNamed: (bugData?.imageName)!)
-        imageNode.size = CGSize(width: 250.0, height: 250.0)
+        imageNode.size = CGSize(width: 500.0, height: 500.0)
         imageNode.position = CGPoint(x: 0, y: 100.0)
         imageNode.alpha = 0.0
         fadeInImage(image: imageNode)
@@ -41,7 +44,7 @@ class BugPopupNode: SKSpriteNode {
     func addOptionButtons() {
         for i in 0...(bugData?.answerLabels.count)!-1 {
             let answerButton = BugPopupAnswerButtonNode(text: (bugData?.answerLabels[i])!, size: CGSize(width: 100.0, height: 50.0), answer: (bugData?.answerLabels[i])!, correctAnswer: (bugData?.correctAnswer[i])!)
-            answerButton.position = answerButtonLocations![i]
+            answerButton.position = answerButtonLocations[i]
             setupButtonActions(button: answerButton)
             fadeInButton(button: answerButton)
             self.addChild(answerButton)

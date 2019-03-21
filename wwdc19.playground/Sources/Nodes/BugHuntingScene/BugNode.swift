@@ -72,7 +72,7 @@ class BugNode: SKSpriteNode {
     }
     
     func createPopupNode() -> BugPopupNode {
-        let popupNode = BugPopupNode(size: CGSize(width: 500.0, height: 500.0), bugData: self.bugData!)
+        let popupNode = BugPopupNode(size: CGSize(width: 750.0, height: 750.0), bugData: self.bugData!)
         return popupNode
     }
 }
