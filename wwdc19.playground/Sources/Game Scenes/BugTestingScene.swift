@@ -10,6 +10,7 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     var thePlayer: PlayerNode = PlayerNode()
     var drawingCanvas: CanvasView?
     var resultTextBubble: TextLineNode?
+    var computerNode: SKSpriteNode?
     
     var previousPrediction = ""
     var currentPredictions = [String]()
@@ -63,10 +64,10 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     
     // Method which sets up and adds the computer node to the scene
     func setupAndAddComputerNode() {
-        let computerNode = SKSpriteNode(texture: SKTexture(imageNamed: "macintosh-sprite1"), color: NSColor.white, size: CGSize(width: 150, height: 150))
-        computerNode.position = CGPoint(x: 300, y: -100.0)
-        computerNode.zPosition = -1
-        self.addChild(computerNode)
+        computerNode = SKSpriteNode(texture: SKTexture(imageNamed: "macintosh-sprite1"), color: NSColor.white, size: CGSize(width: 150, height: 150))
+        computerNode?.position = CGPoint(x: 300, y: -100.0)
+        computerNode?.zPosition = -1
+        self.addChild(computerNode!)
     }
     
     // Method which sets up the correct prediction button
@@ -90,6 +91,7 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     // Method to update the text in the computer text bubble
     func updatePredictionTextBubbleLabel() {
         if predictionDoneTyping {
+            computerNode?.run(SKAction.repeat(SKAction.animate(with: [SKTexture(imageNamed: "macintosh-sprite1"), SKTexture(imageNamed: "macintosh-sprite2")], timePerFrame: 0.1), count: 5))
             resultTextBubble?.textLineNodeLabel?.text = ""
             predictionDoneTyping = false
             let text = currentPredictions[0]

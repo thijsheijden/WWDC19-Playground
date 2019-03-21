@@ -79,7 +79,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         introTextBubble.position = CGPoint(x: 0.0, y: -270.0)
         introTextBubble.textLineNodeLabel?.fontSize = 60.0
         self.addChild(introTextBubble)
-        introTextBubble.startTypingText(text: GameVariables.gameSceneText, timeBetweenChars: 0.08, removeOnCompletion: true) { () -> Void in
+        introTextBubble.startTypingText(text: GameVariables.gameSceneText, timeBetweenChars: 0.1, removeOnCompletion: true) { () -> Void in
             self.timerNode?.startTimer()
             completion()
         }
@@ -94,7 +94,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         bug.isUserInteractionEnabled = false
         bug.physicsBody = nil
         self.addChild(bug)
-        bug.run(SKAction.sequence([SKAction.changeCharge(by: 0.0, duration: 4.5), SKAction.unhide(), SKAction.move(to: CGPoint(x: 500, y: 28), duration: 1.5), SKAction.move(to: CGPoint(x: 530, y: 235), duration: 1.5), SKAction.move(to: CGPoint(x: 750, y: 210), duration: 1.5)])) { () -> Void in
+        bug.run(SKAction.sequence([SKAction.changeCharge(by: 0.0, duration: 5.0), SKAction.unhide(), SKAction.move(to: CGPoint(x: 500, y: 28), duration: 1.5), SKAction.move(to: CGPoint(x: 530, y: 235), duration: 1.5), SKAction.move(to: CGPoint(x: 750, y: 210), duration: 1.5)])) { () -> Void in
                 bug.removeFromParent()
         }
     }
@@ -122,9 +122,9 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     
     // Setting up the label which displays how many bugs you have fixed, shown top right of the camera frame
     func setupAndAddBugsFixedLabel() {
-        bugsFixedLabel = SKLabelNode(text: "0/6 bugs fixed")
+        bugsFixedLabel = SKLabelNode(text: "0/3 bugs fixed")
         bugsFixedLabel?.fontName = "Minecraft"
-        bugsFixedLabel?.fontSize = 20.0
+        bugsFixedLabel?.fontSize = 25.0
         bugsFixedLabel?.position = CGPoint(x: -500, y: 250)
         bugsFixedLabel?.zPosition = 99
         self.cameraNode?.addChild(bugsFixedLabel!)
@@ -340,7 +340,12 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
                         }
                     }
                 } else {
-                    print("Sorry this developer is busy")
+                    // Making sure the bugs never get stuck
+                    if (contact.bodyB.node?.frame.minX)! < (contact.bodyA.node?.frame.minX)! {
+                        contact.bodyA.node?.physicsBody?.applyImpulse(CGVector(dx: 25.0, dy: 25.0))
+                    } else {
+                        contact.bodyA.node?.physicsBody?.applyImpulse(CGVector(dx: -25.0, dy: 25.0))
+                    }
                 }
             }
         }
