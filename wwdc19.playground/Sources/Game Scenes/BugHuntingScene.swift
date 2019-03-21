@@ -34,7 +34,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     var canCurrentlyCollideWithBugNode: Bool = true
     
     var scholarNodes: [ScholarNode] = [ScholarNode]()
-    var scholarNodeLocations: [CGPoint] = [CGPoint(x: 280.0, y: -170.0), CGPoint(x: 1545, y: 715), CGPoint(x: 2400, y: -85), CGPoint(x: 3015, y: 400)]
+    var scholarNodeLocations: [CGPoint] = [CGPoint(x: 350.0, y: -170.0), CGPoint(x: 1545, y: 715), CGPoint(x: 2400, y: -85), CGPoint(x: 3015, y: 400)]
     
     var canTakeSelfie: Bool = true
     
@@ -57,6 +57,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         setupScholarNodes()
         setupAndAddTimerNode()
         runTinyTutorial { () -> Void in
+            self.removeMovementButtons()
             self.movementEnabled = true
         }
         
@@ -75,15 +76,24 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     
     // Method which runs the short tutorial at the start of the game.
     func runTinyTutorial(completion: @escaping () -> Void) {
-        let introTextBubble = TextLineNode(texture: SKTexture(imageNamed: "tutorial-bubble"), size: CGSize(width: 1000.0, height: 150.0))
-        introTextBubble.position = CGPoint(x: 0.0, y: -270.0)
-        introTextBubble.textLineNodeLabel?.fontSize = 60.0
-        self.addChild(introTextBubble)
+        let introTextBubble = TextLineNode(texture: SKTexture(imageNamed: "text-bubble"), size: CGSize(width: 450, height: 150))
+        introTextBubble.position = CGPoint(x: 225, y: 110)
+        introTextBubble.textLineNodeLabel?.fontSize = 30.0
+        self.cameraNode?.addChild(introTextBubble)
         introTextBubble.startTypingText(text: GameVariables.gameSceneText, timeBetweenChars: 0.1, removeOnCompletion: true) { () -> Void in
             self.timerNode?.startTimer()
             completion()
         }
         moveBugToDeveloperTutorial()
+    }
+    
+    // Method to remove all the tutorial movement keys
+    func removeMovementButtons() {
+        for node in self.children {
+            if node.name == "movementKeys" {
+                node.removeFromParent()
+            }
+        }
     }
     
     // Moving a bug to a developer for the tutorial
@@ -94,8 +104,19 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         bug.isUserInteractionEnabled = false
         bug.physicsBody = nil
         self.addChild(bug)
-        bug.run(SKAction.sequence([SKAction.changeCharge(by: 0.0, duration: 5.0), SKAction.unhide(), SKAction.move(to: CGPoint(x: 500, y: 28), duration: 1.5), SKAction.move(to: CGPoint(x: 530, y: 235), duration: 1.5), SKAction.move(to: CGPoint(x: 750, y: 210), duration: 1.5)])) { () -> Void in
+        
+        // Setting up the cursor node that follows the bug to imitate dragging
+        let cursorNode = SKSpriteNode(texture: SKTexture(imageNamed: "cursor"), color: NSColor.white, size: CGSize(width: 80, height: 85))
+        cursorNode.position = CGPoint(x: 110, y: -120)
+        cursorNode.isHidden = true
+        self.addChild(cursorNode)
+        
+        bug.run(SKAction.sequence([SKAction.changeCharge(by: 0.0, duration: 1.5), SKAction.unhide(), SKAction.move(to: CGPoint(x: 500, y: 28), duration: 1.5), SKAction.move(to: CGPoint(x: 530, y: 235), duration: 1.5), SKAction.move(to: CGPoint(x: 750, y: 210), duration: 1.5)])) { () -> Void in
                 bug.removeFromParent()
+        }
+        
+        cursorNode.run(SKAction.sequence([SKAction.changeCharge(by: 0.0, duration: 1.5), SKAction.unhide(), SKAction.move(to: CGPoint(x: 500, y: -42), duration: 1.5), SKAction.move(to: CGPoint(x: 530, y: 165), duration: 1.5), SKAction.move(to: CGPoint(x: 750, y: 140), duration: 1.5)])) { () -> Void in
+            cursorNode.removeFromParent()
         }
     }
     
@@ -109,6 +130,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     func setupBugNodes() {
         for i in 0...bugNodeLocations.count-1 {
             let bugNode = BugNode(texture: SKTexture(imageNamed: "bug-1"), size: CGSize(width: 100, height: 100), bugData: BugDataStruct(imageName: GameVariables.bugImage[i], answerLabels: GameVariables.imageLabels[i], correctAnswer: GameVariables.correctAnswer[i]))
+            bugNode.zPosition = -1
             bugNode.position = bugNodeLocations[i]
             bugNodes.append(bugNode)
             addBugNodesToView(bugNode: bugNode)
