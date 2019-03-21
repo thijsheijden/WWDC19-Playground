@@ -17,16 +17,17 @@ class TextLineNode: SKSpriteNode {
         textLineNodeLabel = SKLabelNode(text: "")
         textLineNodeLabel?.fontName = "Minecraft"
         textLineNodeLabel?.fontSize = 25.0
-        textLineNodeLabel?.position = CGPoint(x: self.frame.minX + 25, y: self.frame.maxY - 60)
-        textLineNodeLabel?.verticalAlignmentMode = .center
+        textLineNodeLabel?.position = CGPoint(x: self.frame.minX + 25, y: self.frame.maxY - 40)
         textLineNodeLabel?.horizontalAlignmentMode = .left
         textLineNodeLabel?.fontColor = NSColor.black
         self.addChild(textLineNodeLabel!)
     }
     
-    func startTypingText(text: String, completion: @escaping () -> Void) {
-        textLineNodeLabel?.typeOutText(text: text) { () -> Void in
-            self.removeSelf()
+    func startTypingText(text: String, timeBetweenChars: Double, removeOnCompletion: Bool, completion: @escaping () -> Void) {
+        textLineNodeLabel?.typeOutText(text: text, timeBetweenChars: timeBetweenChars) { () -> Void in
+            if removeOnCompletion {
+                self.removeSelf()
+            }
             completion()
         }
     }

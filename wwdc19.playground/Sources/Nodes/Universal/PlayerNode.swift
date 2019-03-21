@@ -32,9 +32,17 @@ class PlayerNode: SKSpriteNode {
         case (false, false, true):
             jumpPlayer()
         case (true, false, true):
+            horizontalMovementSpeed = -runMovementSpeed
+            GameVariables.playerPointingDirection = "left"
+            stateMachine?.enter(RunningState.self)
             jumpPlayer()
+            movePlayer()
         case (false, true, true):
+            horizontalMovementSpeed = runMovementSpeed
+            GameVariables.playerPointingDirection = "right"
+            stateMachine?.enter(RunningState.self)
             jumpPlayer()
+            movePlayer()
         default:
             horizontalMovementSpeed = 0.0
             stateMachine?.enter(IdleState.self)
@@ -47,7 +55,7 @@ class PlayerNode: SKSpriteNode {
     
     func jumpPlayer() {
         if currentlyTouchingGround {
-            self.physicsBody?.applyImpulse(CGVector(dx: horizontalMovementSpeed*5, dy: 200.0))
+            self.physicsBody?.applyImpulse(CGVector(dx: horizontalMovementSpeed*5, dy: 200))
             currentlyTouchingGround = false
         }
     }

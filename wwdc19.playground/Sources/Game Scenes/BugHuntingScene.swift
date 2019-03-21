@@ -120,7 +120,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     // Setting up and adding the door which takes the player to the next level
     func setupAndAddNextLevelDoorNode() {
         let nextLevelDoorNode = DoorNode(texture: SKTexture(imageNamed: "apple"), size: CGSize(width: 100.0, height: 100.0))
-        nextLevelDoorNode.position = CGPoint(x: 300.0, y: 50.0)
+        nextLevelDoorNode.position = CGPoint(x: 3000.0, y: 50.0)
         self.addChild(nextLevelDoorNode)
     }
     
@@ -148,7 +148,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         textLineNode?.position = CGPoint(x: 220.0, y: 200.0)
         textLineNode?.zPosition = 100
         self.cameraNode?.addChild(textLineNode!)
-        textLineNode?.startTypingText(text: GameVariables.gameSceneText) { () -> Void in
+        textLineNode?.startTypingText(text: GameVariables.gameSceneText, timeBetweenChars: 0.1, removeOnCompletion: true) { () -> Void in
             self.timerNode?.startTimer()
         }
     }
@@ -356,7 +356,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     
     // Method which calculates wether the player touched the top of the platform or not
     func playerTouchingTopOfPlatform(frame: CGRect) -> Bool {
-        return (thePlayer.frame.minY - 2.50) < frame.maxY
+        return ((thePlayer.frame.minY - 2.50) < frame.maxY) && ((thePlayer.frame.minX > frame.minX) && (thePlayer.frame.maxX < frame.maxX))
     }
     
     // Method which adds a dark background behind the popup.

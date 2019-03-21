@@ -1,0 +1,64 @@
+{
+  "layer_shapes" : {
+    "prediction" : {
+      "k" : 8,
+      "w" : 1,
+      "n" : 1,
+      "h" : 1
+    },
+    "image (120x120)" : {
+      "k" : 3,
+      "w" : 120,
+      "n" : 1,
+      "h" : 120
+    },
+    "max_pooling2d_17_output" : {
+      "k" : 32,
+      "w" : 59,
+      "n" : 1,
+      "h" : 59
+    },
+    "dense_21__activation___output" : {
+      "k" : 128,
+      "w" : 1,
+      "n" : 1,
+      "h" : 1
+    },
+    "conv2d_18__activation___output" : {
+      "k" : 32,
+      "w" : 57,
+      "n" : 1,
+      "h" : 57
+    },
+    "flatten_9_output" : {
+      "k" : 25088,
+      "w" : 1,
+      "n" : 1,
+      "h" : 1
+    },
+    "conv2d_17__activation___output" : {
+      "k" : 32,
+      "w" : 118,
+      "n" : 1,
+      "h" : 118
+    },
+    "dense_22__activation___output" : {
+      "k" : 128,
+      "w" : 1,
+      "n" : 1,
+      "h" : 1
+    },
+    "max_pooling2d_18_output" : {
+      "k" : 32,
+      "w" : 28,
+      "n" : 1,
+      "h" : 28
+    },
+    "dense_23_output" : {
+      "k" : 8,
+      "w" : 1,
+      "n" : 1,
+      "h" : 1
+    }
+  }
+}

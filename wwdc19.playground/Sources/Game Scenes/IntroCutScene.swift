@@ -26,7 +26,7 @@ public class IntroCutScene: SKScene {
         cutsceneLabel1?.fontSize = 50.0
         cutsceneLabel1?.text? = ""
         cutsceneLabel1?.preferredMaxLayoutWidth = 300.0
-        cutsceneLabel1?.typeOutText(text: GameVariables.firstCutSceneText) { () -> Void in
+        cutsceneLabel1?.typeOutText(text: GameVariables.firstCutSceneText, timeBetweenChars: 0.08) { () -> Void in
             self.presentBugHuntingScene()
         }
     }

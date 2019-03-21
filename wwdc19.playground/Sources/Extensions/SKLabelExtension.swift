@@ -1,11 +1,11 @@
 import SpriteKit
 
 extension SKLabelNode {
-    
-    func typeOutText(text: String, completion: @escaping () -> Void) {
+
+    func typeOutText(text: String, timeBetweenChars: Double, completion: @escaping () -> Void) {
         var atCharacter: Int = 0
         
-        Timer.scheduledTimer(withTimeInterval: 0.08, repeats: true) { (timer) in
+        Timer.scheduledTimer(withTimeInterval: timeBetweenChars, repeats: true) { (timer) in
             
             if text[atCharacter] == "/" {
                 atCharacter += 1
