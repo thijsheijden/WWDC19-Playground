@@ -51,7 +51,6 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         setupBugNodes()
         setupAndAddDeveloperNode()
         setupAndAddBugsFixedLabel()
-        setupAndAddNextLevelDoorNode()
         setupJumpPads()
         setupAndAddZoomOutButton()
         setupScholarNodes()
@@ -167,7 +166,8 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     // Method which sets up all the scholar nodes
     func setupScholarNodes() {
         for scholarNodeLocation in scholarNodeLocations {
-            let scholarNode = ScholarNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 50.0, height: 150.0))
+            let textureNumber = Int.random(in: 1...2)
+            let scholarNode = ScholarNode(texture: SKTexture(imageNamed: "scholar-\(textureNumber)"), size: CGSize(width: 50.0, height: 144.0))
             scholarNode.position = scholarNodeLocation
             scholarNodes.append(scholarNode)
             self.addChild(scholarNode)
@@ -179,13 +179,6 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         for scholar in scholarNodes {
             scholar.checkWhereTimIs(timPosition: thePlayer.position)
         }
-    }
-    
-    // Setting up and adding the door which takes the player to the next level
-    func setupAndAddNextLevelDoorNode() {
-        let nextLevelDoorNode = DoorNode(texture: SKTexture(imageNamed: "apple"), size: CGSize(width: 100.0, height: 100.0))
-        nextLevelDoorNode.position = CGPoint(x: 3000.0, y: 50.0)
-        self.addChild(nextLevelDoorNode)
     }
     
     // Setting up and adding the developer nodes to the scene at set locations
@@ -342,16 +335,6 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
                 if jumpPad.active {
                     jumpPad.activated()
                     thePlayer.jumpPadTouched()
-                }
-            }
-        }
-        
-        // Colision between player and next level door
-        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.nextLevelDoor.rawValue {
-            print((bugsFixedLabel?.text)!)
-            if numberOfBugsFixed == 3 {
-                if let nextScene = BugTestingScene(fileNamed: "BugTestingScene") {
-                    GameVariables.sceneView.presentScene(nextScene, transition: SKTransition.push(with: SKTransitionDirection.left, duration: 2.5))
                 }
             }
         }

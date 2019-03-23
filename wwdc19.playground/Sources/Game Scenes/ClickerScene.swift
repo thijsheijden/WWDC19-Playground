@@ -18,6 +18,7 @@ public class ClickerScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
         
         thePlayer.setupPlayerNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 64, height: 192), position: CGPoint(x: 0, y: -64))
+        thePlayer.zPosition = 0
         thePlayer.setupStateMachine()
         
         cameraNode = SKCameraNode()
@@ -26,6 +27,7 @@ public class ClickerScene: SKScene, SKPhysicsContactDelegate {
         setupAndAddMrClicker()
         addTutorialPopup()
         addGlow()
+        startTimer()
     }
     
     // Method for adding the explanation popup
@@ -79,6 +81,29 @@ public class ClickerScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(thePlayer)
         self.addChild(cameraNode!)
         setupCamera()
+    }
+    
+    // Method to start the 30 second timer in which you have to catch mr clicker
+    func startTimer() {
+        Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { (timer) in
+            self.timeUpPopup()
+        }
+    }
+    
+    // Method to display that the time is up but that you luckily have a backup clicker
+    func timeUpPopup() {
+        let timeUpPopup = SceneCompletionNode(size: CGSize(width: 600, height: 500), completionLabel: "Well, it seems like Mr. Clicker has gotten away this time.\n\nLuckily we have a backup clicker. Get out there Tim!")
+        timeUpPopup.position = CGPoint(x: 0, y: 0)
+        timeUpPopup.zPosition = 101
+        timeUpPopup.textLineNodeLabel?.fontSize = 32
+        timeUpPopup.textLineNodeLabel?.horizontalAlignmentMode = .center
+        timeUpPopup.textLineNodeLabel?.position = CGPoint(x: 5, y: -110)
+        timeUpPopup.textLineNodeLabel?.preferredMaxLayoutWidth = 585
+        timeUpPopup.continueButton?.action = { (button) in
+            // TODO: Move to the final scene with WWDC19 on it or something akin
+        }
+        addDimPanelBehindPopup()
+        self.addChild(timeUpPopup)
     }
     
     // Setting up the camera

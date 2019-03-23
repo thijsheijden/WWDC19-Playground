@@ -74,10 +74,12 @@ class ScholarNode: SKSpriteNode {
         if self.position.x >= timPosition.x {
             if movementSpeed > 0 {
                 movementSpeed *= -1
+                self.run(SKAction.scaleX(by: -1.0, y: 1.0, duration: 0.0))
             }
         } else if self.position.x < timPosition.x {
             if movementSpeed < 0 {
                 movementSpeed *= -1
+                self.run(SKAction.scaleX(by: -1.0, y: 1.0, duration: 0.0))
             }
         }
         moveOnPlatform()

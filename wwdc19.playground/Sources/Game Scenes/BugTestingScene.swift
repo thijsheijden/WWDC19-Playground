@@ -35,7 +35,6 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
         setupAndAddCorrectButton()
         setupCoreMLRequest()
         addTutorialPopup()
-        startTimer()
     }
     
     // Method for adding the explanation popup
@@ -51,6 +50,7 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
             self.tutorialPopup?.removeFromParent()
             self.dimPanel?.removeFromParent()
             self.setupAndAddCanvasView()
+            self.startTimer()
         }
         addDimPanelBehindPopup()
         self.addChild(tutorialPopup!)
@@ -263,9 +263,6 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
             if playerTouchingTopOfPlatform(frame: (contact.bodyA.node?.frame)!) {
                 thePlayer.currentlyTouchingGround = true
             }
-        }
-        
-        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.nextLevelDoor.rawValue {
         }
     }
     

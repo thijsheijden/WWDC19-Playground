@@ -2,7 +2,7 @@ import PlaygroundSupport
 import SpriteKit
 
 // Loading the menu scene
-//let scene  = ClickerScene(fileNamed: "ClickerScene")
+//let scene  = BugHuntingScene(fileNamed: "BugHuntingScene")
 let scene = MenuScene(size: GameVariables.sceneView.frame.size)
 GameVariables.sceneView.presentScene(scene)
 
