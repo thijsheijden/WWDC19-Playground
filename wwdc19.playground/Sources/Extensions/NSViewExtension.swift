@@ -27,8 +27,8 @@ extension NSImage {
 extension CGImage {
     func resize() -> CGImage? {
         
-        let width = 120.0
-        let height = 120.0
+        let width = 250.0
+        let height = 250.0
         
         guard let colorSpace = self.colorSpace else { return nil }
         guard let context = CGContext(data: nil, width: Int(width), height: Int(height), bitsPerComponent: self.bitsPerComponent, bytesPerRow: self.bytesPerRow, space: colorSpace, bitmapInfo: self.alphaInfo.rawValue) else { return nil }

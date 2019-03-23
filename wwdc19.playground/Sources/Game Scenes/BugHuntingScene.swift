@@ -56,6 +56,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         setupAndAddZoomOutButton()
         setupScholarNodes()
         setupAndAddTimerNode()
+        addGlow()
         runTinyTutorial { () -> Void in
             self.removeMovementButtons()
             self.movementEnabled = true
@@ -117,6 +118,17 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         
         cursorNode.run(SKAction.sequence([SKAction.changeCharge(by: 0.0, duration: 1.5), SKAction.unhide(), SKAction.move(to: CGPoint(x: 500, y: -42), duration: 1.5), SKAction.move(to: CGPoint(x: 530, y: 165), duration: 1.5), SKAction.move(to: CGPoint(x: 750, y: 140), duration: 1.5)])) { () -> Void in
             cursorNode.removeFromParent()
+        }
+    }
+    
+    // Adding glow to the keynote sign
+    func addGlow() {
+        for child in self.children {
+            if child.name == "glow" {
+                if let spriteNode = child as? SKSpriteNode {
+                    spriteNode.addGlow(radius: 60.0)
+                }
+            }
         }
     }
     

@@ -35,6 +35,7 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
         setupAndAddCorrectButton()
         setupCoreMLRequest()
         addTutorialPopup()
+        startTimer()
     }
     
     // Method for adding the explanation popup
@@ -70,6 +71,33 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
         thePlayer.setupPlayerNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 64, height: 192), position: CGPoint(x: -350.0, y: -64))
         thePlayer.setupStateMachine()
         self.addChild(thePlayer)
+    }
+    
+    // Setting a 30 second timer which gives the player an alert that it is time to move on or they wont catch mr clicker
+    func startTimer() {
+        Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { (timer) in
+            self.drawingCanvas?.removeFromSuperview()
+            self.displayTimeUpPopup()
+        }
+    }
+    
+    // Display popup that the time has passed and you should move on to catch mr clicker
+    func displayTimeUpPopup() {
+        let timeUpPopup = SceneCompletionNode(size: CGSize(width: 600, height: 400), completionLabel: "If you want to catch Mr. Clicker in time for the keynote, you better leave now.")
+        timeUpPopup.position = CGPoint(x: 0, y: 0)
+        timeUpPopup.zPosition = 101
+        timeUpPopup.textLineNodeLabel?.fontSize = 32
+        timeUpPopup.textLineNodeLabel?.horizontalAlignmentMode = .center
+        timeUpPopup.textLineNodeLabel?.position = CGPoint(x: 5, y: -20)
+        timeUpPopup.textLineNodeLabel?.preferredMaxLayoutWidth = 585
+        timeUpPopup.continueButton?.action = { (button) in
+            if let clickerScene = ClickerScene(fileNamed: "ClickerScene") {
+                GameVariables.sceneView.presentScene(clickerScene, transition: SKTransition.moveIn(with: SKTransitionDirection.right, duration: 2.5))
+                self.drawingCanvas?.removeFromSuperview()
+            }
+        }
+        addDimPanelBehindPopup()
+        self.addChild(timeUpPopup)
     }
     
     // Method which sets up the clear button for the canvas
@@ -157,7 +185,7 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: All CoreML and Vision code
     func setupCoreMLRequest() {
-        let my_model = pictionairy().model
+        let my_model = drawnAppleClassifier().model
         
         guard let model = try? VNCoreMLModel(for: my_model) else {
             fatalError("Cannot load Core ML Model")
