@@ -11,10 +11,14 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     var drawingCanvas: CanvasView?
     var resultTextBubble: TextLineNode?
     var computerNode: SKSpriteNode?
+    var tutorialPopup: SceneCompletionNode?
+    var dimPanel: SKSpriteNode?
     
     var previousPrediction = ""
     var currentPredictions = [String]()
     var predictionDoneTyping: Bool = true
+    
+    var recognitionEnabled: Bool = false
     
     var request = [VNRequest]()
     
@@ -25,17 +29,45 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
         cameraNode = SKCameraNode()
         setupCamera()
         setupPlayer()
-        setupAndAddCanvasView()
         setupAndAddClearCanvasButton()
         setupAndAddComputerNode()
         setupAndAddTextBubble()
         setupAndAddCorrectButton()
         setupCoreMLRequest()
+        addTutorialPopup()
+    }
+    
+    // Method for adding the explanation popup
+    func addTutorialPopup() {
+        tutorialPopup = SceneCompletionNode(size: CGSize(width: 600, height: 400), completionLabel: "This is the testing room. Here you can test if your bug fixes worked.\n\nDraw an apple product on the canvas and Mr. Mac will tell you what it is. If you're happy with the fixes click the checkmark button to sign off on the fixes and go and catch Mr. Clicker.")
+        tutorialPopup?.position = CGPoint(x: 0, y: 0)
+        tutorialPopup?.zPosition = 101
+        tutorialPopup?.textLineNodeLabel?.fontSize = 26
+        tutorialPopup?.textLineNodeLabel?.horizontalAlignmentMode = .center
+        tutorialPopup?.textLineNodeLabel?.position = CGPoint(x: 5, y: -20)
+        tutorialPopup?.textLineNodeLabel?.preferredMaxLayoutWidth = 585
+        tutorialPopup?.continueButton?.action = { (button) in
+            self.tutorialPopup?.removeFromParent()
+            self.dimPanel?.removeFromParent()
+            self.setupAndAddCanvasView()
+        }
+        addDimPanelBehindPopup()
+        self.addChild(tutorialPopup!)
+    }
+    
+    // Method for adding a dimpanel
+    func addDimPanelBehindPopup() {
+        dimPanel = SKSpriteNode(color: NSColor.black, size: CGSize(width: self.size.width * 1.5, height: self.size.height * 1.5))
+        dimPanel?.alpha = 0.0
+        dimPanel?.zPosition = 100
+        dimPanel?.alpha = 0.75
+        dimPanel?.position = (self.cameraNode?.position)!
+        self.addChild(dimPanel!)
     }
     
     // Setting up the player node
     func setupPlayer() {
-        thePlayer.setupPlayerNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 64, height: 192), position: CGPoint(x: -250.0, y: -64))
+        thePlayer.setupPlayerNode(texture: SKTexture(imageNamed: "Idle-1"), size: CGSize(width: 64, height: 192), position: CGPoint(x: -350.0, y: -64))
         thePlayer.setupStateMachine()
         self.addChild(thePlayer)
     }
@@ -58,8 +90,9 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     
     // Adding an NSView which will be used as a drawing canvas
     func setupAndAddCanvasView() {
-        drawingCanvas = CanvasView(frame: NSRect(x: (self.view?.frame.midX)! - 250, y: (self.view?.frame.midY)! - 140, width: 450.0, height: 450.0))
-        self.view?.addSubview(drawingCanvas!)
+        drawingCanvas = CanvasView(frame: NSRect(x: (self.view?.frame.midX)! - 250, y: (self.view?.frame.midY)! - 140, width: 450.0, height: 450.0))        
+        self.view?.addSubview(self.drawingCanvas!)
+        recognitionEnabled = true
     }
     
     // Method which sets up and adds the computer node to the scene
@@ -75,7 +108,10 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
         let correctButton = ButtonNode(texture: SKTexture(imageNamed: "correct-button"), size: CGSize(width: 80.0, height: 80.0))
         correctButton.position = CGPoint(x: 305, y: -240)
         correctButton.action = { (button) in
-            print("Correct prediction")
+            if let clickerScene = ClickerScene(fileNamed: "ClickerScene") {
+                GameVariables.sceneView.presentScene(clickerScene, transition: SKTransition.moveIn(with: SKTransitionDirection.right, duration: 2.5))
+                self.drawingCanvas?.removeFromSuperview()
+            }
         }
         self.addChild(correctButton)
     }
@@ -109,8 +145,10 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     override public func update(_ currentTime: TimeInterval) {
         thePlayer.getMovementSpeed()
         
-        // Run prediction on the canvas view
-        recognize()
+        if recognitionEnabled {
+            // Run prediction on the canvas view
+            recognize()
+        }
     }
     
     func updateCameraPosition() {

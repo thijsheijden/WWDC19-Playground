@@ -245,6 +245,9 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         timerNode?.position = CGPoint(x: -500.0, y: 175.0)
         timerNode?.zPosition = 99
         self.cameraNode?.addChild(timerNode!)
+        
+        // Conforming to the timerCompletion delegate
+        timerNode?.delegate = self
     }
     
     @objc static override public var supportsSecureCoding: Bool {
@@ -453,6 +456,51 @@ extension BugHuntingScene: BugPopupCorrectAnswerDelegate {
     func updateNumberOfBugsFixedLabel() {
         bugsFixedLabel?.run(SKAction.sequence([SKAction.scale(by: 1.2, duration: 0.2), SKAction.scale(by: 0.8, duration: 0.2)]))
         bugsFixedLabel?.text = "\(numberOfBugsFixed)/3 bugs fixed"
+        
+        checkIfSceneCompleted()
+    }
+    
+    // Method which checks if the player has fixed all three of the bugs, and if so displays the next scene popup
+    func checkIfSceneCompleted() {
+        if numberOfBugsFixed == 3 {
+            movementEnabled = false
+            timerNode?.delegate = nil
+            displaySceneCompletionPopup()
+        }
+    }
+}
+
+// Conforming to the timer completed protocol to know when the time has completed
+extension BugHuntingScene: TimerCompletionDelegate {
+    func timerCompleted() {
+        displaySceneCompletionPopup()
+    }
+    
+    // Method which displays the scene completion popup
+    func displaySceneCompletionPopup() {
+        if numberOfBugsFixed == 3 {
+            let sceneCompletionPopup = SceneCompletionNode(size: CGSize(width: 600, height: 300), completionLabel: "Nice you fixed all the bugs!")
+            sceneCompletionPopup.continueButton?.action = { (button) in
+                if let bugTestingScene = BugTestingScene(fileNamed: "BugTestingScene") {
+                    GameVariables.sceneView.presentScene(bugTestingScene, transition: SKTransition.moveIn(with: SKTransitionDirection.right, duration: 2.5))
+                }
+            }
+            sceneCompletionPopup.position = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
+            sceneCompletionPopup.zPosition = 101
+            addDimPanelBehindPopup()
+            self.addChild(sceneCompletionPopup)
+        } else {
+            let sceneCompletionPopup = SceneCompletionNode(size: CGSize(width: 600, height: 300), completionLabel: "Ah too bad, you didn't fix all the bugs.")
+            sceneCompletionPopup.continueButton?.action = { (button) in
+                if let bugTestingScene = BugTestingScene(fileNamed: "BugTestingScene") {
+                    GameVariables.sceneView.presentScene(bugTestingScene, transition: SKTransition.moveIn(with: SKTransitionDirection.right, duration: 2.5))
+                }
+            }
+            sceneCompletionPopup.position = CGPoint(x: Double(((self.cameraNode?.frame.minX)! + (self.cameraNode?.frame.maxX)!) / 2), y: Double(((self.cameraNode?.frame.minY)! + (self.cameraNode?.frame.maxY)!) / 2))
+            sceneCompletionPopup.zPosition = 101
+            addDimPanelBehindPopup()
+            self.addChild(sceneCompletionPopup)
+        }
     }
 }
 

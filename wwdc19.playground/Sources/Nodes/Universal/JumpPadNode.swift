@@ -22,7 +22,6 @@ class JumpPadNode: SKSpriteNode {
     }
     
     func setupPhysicsBody() {
-        print("Set up jumppad physics body")
         self.physicsBody = SKPhysicsBody(texture: self.texture!, size: self.size)
         self.physicsBody?.isDynamic = false
         self.physicsBody?.affectedByGravity = false

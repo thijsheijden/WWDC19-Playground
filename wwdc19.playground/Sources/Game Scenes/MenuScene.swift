@@ -4,14 +4,29 @@ import SpriteKit
 public class MenuScene: SKScene {
     
     var startButton: ButtonNode!
+    var gameLabel: SKLabelNode!
+    var cameraNode: SKCameraNode!
         
     override public func didMove(to view: SKView) {
-        self.backgroundColor = SKColor.blue
+        self.backgroundColor = SKColor.white
         
+        setupAndAddCamera()
         registerPixelFont()
-        
-        startButton = ButtonNode(texture: SKTexture(imageNamed: "start"), size: CGSize(width: 100, height: 100))
-        startButton.position = CGPoint(x: 100.0, y: 100.0)
+        setupAndAddStartButton()
+        setupAndAddGameTitleLabel()
+    }
+    
+    // Method to setup and add the camera
+    func setupAndAddCamera() {
+        cameraNode = SKCameraNode()
+        self.camera = cameraNode
+        cameraNode.position = CGPoint(x: 0, y: 0)
+    }
+    
+    // Method to add the start button to the scene
+    func setupAndAddStartButton() {
+        startButton = ButtonNode(texture: SKTexture(imageNamed: "start-button"), size: CGSize(width: 184, height: 72))
+        startButton.position = CGPoint(x: 0.0, y: 0.0)
         startButton.action = { (button) in
             if let scene = IntroCutScene(fileNamed: "IntroCutScene") {
                 // Set the scale mode to scale to fit the window
@@ -22,6 +37,16 @@ public class MenuScene: SKScene {
             }
         }
         self.addChild(startButton)
+    }
+    
+    // Method to setup and add the title of the game
+    func setupAndAddGameTitleLabel() {
+        gameLabel = SKLabelNode(text: "Morning of the Keynote")
+        gameLabel.fontName = "Minecraft"
+        gameLabel.fontSize = 72.0
+        gameLabel.position = CGPoint(x: 0.0, y: 200.0)
+        gameLabel.fontColor = NSColor.black
+        self.addChild(gameLabel)
     }
     
     // Method which registers the pixel font so other scenes can use it

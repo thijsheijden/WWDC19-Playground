@@ -1,6 +1,12 @@
 import SpriteKit
 
+protocol TimerCompletionDelegate {
+    func timerCompleted()
+}
+
 class TimerNode: SKSpriteNode {
+    
+    var delegate: TimerCompletionDelegate?
     
     // All the timer phases
     let timerPhases: [SKTexture] = [SKTexture(imageNamed: "timer1"), SKTexture(imageNamed: "timer2"), SKTexture(imageNamed: "timer3"), SKTexture(imageNamed: "timer4"), SKTexture(imageNamed: "timer5"), SKTexture(imageNamed: "timer6"), SKTexture(imageNamed: "timer7"), SKTexture(imageNamed: "timer8"), SKTexture(imageNamed: "timer9")]
@@ -15,7 +21,7 @@ class TimerNode: SKSpriteNode {
     
     func startTimer() {
         self.run(SKAction.animate(with: timerPhases, timePerFrame: 7.5)) { () -> Void in
-            print("Time is up!")
+            self.delegate?.timerCompleted()
         }
     }
 }
