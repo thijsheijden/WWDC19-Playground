@@ -12,7 +12,7 @@ import SpriteKit
  
  ### Please open the live view and drag it out far enough so that there are bars on both sides and none of the view is cut off.
  
- ### For the best gameplay experience use a mouse, as the trackpad can be quite tricky to use during playing. Also I found that less powerful macs could have a little delay loading up the drawing view in the bug testing scene.
+ ### For the best gameplay experience use a mouse, as the trackpad can be quite tricky to use during playing.
  
  ### This was my first time using SpriteKit and I really enjoyed it! Have fun playing the game!
  

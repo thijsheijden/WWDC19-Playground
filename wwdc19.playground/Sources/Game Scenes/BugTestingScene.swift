@@ -110,6 +110,13 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(clearButton)
     }
     
+    // Method which starts a timer which fires every 1 second to recognize the drawing
+    func startRecognition() {
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { (timer) in
+            self.recognize()
+        }
+    }
+    
     // Setting up the camera node
     func setupCamera() {
         self.addChild(cameraNode!)
@@ -118,9 +125,11 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     
     // Adding an NSView which will be used as a drawing canvas
     func setupAndAddCanvasView() {
-        drawingCanvas = CanvasView(frame: NSRect(x: (self.view?.frame.midX)! - 250, y: (self.view?.frame.midY)! - 140, width: 450.0, height: 450.0))        
-        self.view?.addSubview(self.drawingCanvas!)
-        recognitionEnabled = true
+        drawingCanvas = CanvasView(frame: NSRect(x: (self.view?.frame.midX)! - 250, y: (self.view?.frame.midY)! - 140, width: 450.0, height: 450.0))
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { (timer) in
+            self.view?.addSubview(self.drawingCanvas!)
+        }
+        startRecognition()
     }
     
     // Method which sets up and adds the computer node to the scene
@@ -172,11 +181,6 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
     // Called before every frame update
     override public func update(_ currentTime: TimeInterval) {
         thePlayer.getMovementSpeed()
-        
-        if recognitionEnabled {
-            // Run prediction on the canvas view
-            recognize()
-        }
     }
     
     func updateCameraPosition() {
