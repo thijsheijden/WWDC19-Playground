@@ -12,7 +12,7 @@ public class WWDC19Scene: SKScene {
         for node in self.children {
             if node.name == "glow" || node.name == "glow-menu" {
                 if let spriteNode = node as? SKSpriteNode {
-                    spriteNode.addGlow(radius: 15)
+                    spriteNode.addGlow(radius: 60)
                 }
             }
         }
