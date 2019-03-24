@@ -6,7 +6,7 @@ extension NSView {
         cacheDisplay(in: bounds, to: bitmapRep)
         let image = NSImage()
         image.addRepresentation(bitmapRep)
-        bitmapRep.size = bounds.size.doubleScale()
+        bitmapRep.size = bounds.size
         return image
     }
 }
