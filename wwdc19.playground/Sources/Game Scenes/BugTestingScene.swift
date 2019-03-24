@@ -49,8 +49,8 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
         tutorialPopup?.continueButton?.action = { (button) in
             self.tutorialPopup?.removeFromParent()
             self.dimPanel?.removeFromParent()
-            self.setupAndAddCanvasView()
             self.startTimer()
+            self.setupAndAddCanvasView()
         }
         addDimPanelBehindPopup()
         self.addChild(tutorialPopup!)

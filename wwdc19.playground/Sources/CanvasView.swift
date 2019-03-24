@@ -55,7 +55,6 @@ class CanvasView: NSView {
     
     // Method to clear the canvas
     func clearCanvas() {
-        print("Clearing")
         path?.removeAllPoints()
         self.drawLayer?.sublayers = nil
         self.layout()

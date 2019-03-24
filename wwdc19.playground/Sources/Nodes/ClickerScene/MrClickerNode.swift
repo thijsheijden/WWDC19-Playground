@@ -1,9 +1,14 @@
 import SpriteKit
 
+protocol ClickerCaughtDelegate {
+    func caughtMe()
+}
+
 class MrClickerNode: SKSpriteNode {
     
     var isCaught: Bool = false
     var timer: Timer?
+    var delegate: ClickerCaughtDelegate?
     
     let pipeLocations: [CGPoint] = [CGPoint(x: -640, y: -240), CGPoint(x: -400, y: -240), CGPoint(x: -160, y: -240), CGPoint(x: 80, y: -240), CGPoint(x: 320, y: -240), CGPoint(x: 560, y: -240)]
     
@@ -19,6 +24,7 @@ class MrClickerNode: SKSpriteNode {
     
     override func mouseDown(with event: NSEvent) {
         isCaught = true
+        delegate?.caughtMe()
     }
     
     // Method which starts mr clickers movement

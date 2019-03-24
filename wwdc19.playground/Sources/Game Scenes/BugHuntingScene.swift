@@ -29,7 +29,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
     
     var developerNodesLocations: [CGPoint] = [CGPoint(x: 900, y: 285.0), CGPoint(x: 1090.0, y: 628), CGPoint(x: 2800, y: 475)]
     
-    var jumpPadNodeLocations: [CGPoint] = [CGPoint(x: -670.0, y: -125.0), CGPoint(x: 2190.0, y: -125.0), CGPoint(x: 2480, y: 353)]
+    var jumpPadNodeLocations: [CGPoint] = [CGPoint(x: -670.0, y: -125.0), CGPoint(x: 2190.0, y: -125.0), CGPoint(x: 2480, y: 353), CGPoint(x: 680, y: 165)]
     
     var canCurrentlyCollideWithBugNode: Bool = true
     
@@ -60,11 +60,6 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
             self.removeMovementButtons()
             self.movementEnabled = true
         }
-        
-        self.view?.showsFPS = true
-        self.view?.showsNodeCount = true
-//        self.view?.showsPhysics = true
-//        self.view?.showsFields = true
     }
     
     // Adding some of the created children to the scene

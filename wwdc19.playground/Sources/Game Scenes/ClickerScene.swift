@@ -1,4 +1,5 @@
 import SpriteKit
+import AVFoundation
 
 public class ClickerScene: SKScene, SKPhysicsContactDelegate {
     
@@ -8,7 +9,10 @@ public class ClickerScene: SKScene, SKPhysicsContactDelegate {
     var mrClicker: MrClickerNode?
     var tutorialPopup: SceneCompletionNode?
     var dimPanel: SKSpriteNode?
-        
+    var timer: Timer?
+    
+    var audioPlayer: AVAudioPlayer?
+    
     // Variables and constants
     var movementEnabled: Bool = true
     var currentlyTouchingGround: Bool = true
@@ -62,7 +66,48 @@ public class ClickerScene: SKScene, SKPhysicsContactDelegate {
     func setupAndAddMrClicker() {
         mrClicker = MrClickerNode(texture: SKTexture(imageNamed: "mr-clicker"), size: CGSize(width: 112, height: 240))
         mrClicker?.position = CGPoint(x: -400, y: -220)
+        mrClicker?.delegate = self
         self.addChild(mrClicker!)
+    }
+    
+    // Method which gets called when MR Clicker has been caught
+    func mrClickerCaught() {
+        timer?.invalidate()
+        thePlayer.removeAllActions()
+        self.movementEnabled = false
+        // Move mr clicker to the player node
+        mrClicker?.run(SKAction.move(to: CGPoint(x: thePlayer.position.x + 25, y: thePlayer.position.y + 75), duration: 1.5))
+        // Scale mr clicker whilst moving to the player
+        mrClicker?.run(SKAction.scale(to: 0.1, duration: 1.5)) { () -> Void in
+            self.thePlayer.texture = SKTexture(imageNamed: "tim-standing-clicker")
+            self.zoomInToHand()
+            self.mrClicker?.removeFromParent()
+        }
+    }
+    
+    // Method to zoom into the players hand
+    func zoomInToHand() {
+        thePlayer.removeAllActions()
+        thePlayer.texture = SKTexture(imageNamed: "tim-standing-clicker")
+        cameraNode?.run(SKAction.move(to: CGPoint(x: thePlayer.position.x + 25, y: thePlayer.position.y + 75), duration: 2.5))
+        cameraNode?.run(SKAction.scale(to: 0.3, duration: 2.5)) { () -> Void in
+            self.playSoundEffect()
+            if let finalScene = WWDC19Scene(fileNamed: "WWDC19Scene") {
+                GameVariables.sceneView.presentScene(finalScene, transition: SKTransition.fade(withDuration: 2.0))
+            }
+        }
+    }
+    
+    // Play tadaa sound effect
+    func playSoundEffect() {
+        do {
+            let tadaSoundEffect = URL(fileURLWithPath: Bundle.main.path(forResource: "tada-sound-effect", ofType: "mp3")!)
+            audioPlayer = try AVAudioPlayer(contentsOf: tadaSoundEffect)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
     
     // Method which adds nice glow to the keynote sign
@@ -85,7 +130,7 @@ public class ClickerScene: SKScene, SKPhysicsContactDelegate {
     
     // Method to start the 30 second timer in which you have to catch mr clicker
     func startTimer() {
-        Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { (timer) in
+        timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { (timer) in
             self.timeUpPopup()
         }
     }
@@ -97,10 +142,12 @@ public class ClickerScene: SKScene, SKPhysicsContactDelegate {
         timeUpPopup.zPosition = 101
         timeUpPopup.textLineNodeLabel?.fontSize = 32
         timeUpPopup.textLineNodeLabel?.horizontalAlignmentMode = .center
-        timeUpPopup.textLineNodeLabel?.position = CGPoint(x: 5, y: -110)
+        timeUpPopup.textLineNodeLabel?.position = CGPoint(x: 5, y: -20)
         timeUpPopup.textLineNodeLabel?.preferredMaxLayoutWidth = 585
         timeUpPopup.continueButton?.action = { (button) in
-            // TODO: Move to the final scene with WWDC19 on it or something akin
+            timeUpPopup.removeFromParent()
+            self.dimPanel?.removeFromParent()
+            self.zoomInToHand()
         }
         addDimPanelBehindPopup()
         self.addChild(timeUpPopup)
@@ -165,4 +212,10 @@ public class ClickerScene: SKScene, SKPhysicsContactDelegate {
         return (thePlayer.frame.minY - 2.50) < frame.maxY
     }
     
+}
+
+extension ClickerScene: ClickerCaughtDelegate {
+    func caughtMe() {
+        self.mrClickerCaught()
+    }
 }
