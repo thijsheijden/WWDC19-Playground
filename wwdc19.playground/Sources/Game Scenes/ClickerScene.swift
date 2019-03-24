@@ -181,7 +181,7 @@ public class ClickerScene: SKScene, SKPhysicsContactDelegate {
         case let x where x == " ":
             thePlayer.jump = true
         default:
-            print(event.characters!)
+            print("Unknown key pressed, you might have caps lock turned on!")
         }
     }
     
@@ -195,7 +195,7 @@ public class ClickerScene: SKScene, SKPhysicsContactDelegate {
         case let x where x == " ":
             thePlayer.jump = false
         default:
-            print("other key pressed")
+            print("")
         }
     }
     

@@ -33,7 +33,6 @@ class TextLineNode: SKSpriteNode {
     }
     
     func removeSelf() {
-        print("Done typing")
         self.removeFromParent()
     }
 }

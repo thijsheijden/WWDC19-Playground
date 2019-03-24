@@ -290,7 +290,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         case let x where x == " ":
             thePlayer.jump = true
         default:
-            print(event.characters!)
+            print("Unknown key pressed, you might have caps lock turned on!")
         }
     }
     
@@ -304,7 +304,7 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
         case let x where x == " ":
             thePlayer.jump = false
         default:
-            print("other key pressed")
+            print("")
         }
     }
     
@@ -315,6 +315,11 @@ public class BugHuntingScene: SKScene, SKPhysicsContactDelegate {
             if playerTouchingTopOfPlatform(frame: (contact.bodyA.node?.frame)!) {
                 thePlayer.currentlyTouchingGround = true
             }
+        }
+        
+        // Collision between player and developer
+        if contact.bodyA.categoryBitMask == GameVariables.ColliderType.player.rawValue && contact.bodyB.categoryBitMask == GameVariables.ColliderType.developer.rawValue {
+            thePlayer.currentlyTouchingGround = true
         }
         
         // When a colision is detected between a platform and a bug, the bug receives the maxX and minX values for that platform so it never falls of

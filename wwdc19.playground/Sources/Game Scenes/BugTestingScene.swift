@@ -73,9 +73,9 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(thePlayer)
     }
     
-    // Setting a 30 second timer which gives the player an alert that it is time to move on or they wont catch mr clicker
+    // Setting a 45 second timer which gives the player an alert that it is time to move on or they wont catch mr clicker
     func startTimer() {
-        Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { (timer) in
+        Timer.scheduledTimer(withTimeInterval: 45.0, repeats: false) { (timer) in
             self.drawingCanvas?.removeFromSuperview()
             self.displayTimeUpPopup()
         }
@@ -239,7 +239,7 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
         case let x where x == " ":
             thePlayer.jump = true
         default:
-            print(event.characters!)
+            print("Unknown key pressed, you might have caps lock turned on!")
         }
     }
     
@@ -253,7 +253,7 @@ public class BugTestingScene: SKScene, SKPhysicsContactDelegate {
         case let x where x == " ":
             thePlayer.jump = false
         default:
-            print("other key pressed")
+            print("")
         }
     }
     
